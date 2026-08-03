@@ -114,6 +114,106 @@ namespace Schedule_Management.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            string email = model.Email.Trim().ToLower();
+
+            string passwordHash = HashPassword(model.Password);
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u =>
+                    u.Email == email &&
+                    u.PasswordHash == passwordHash &&
+                    u.IsActive);
+
+            if (user == null)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Invalid email or password."
+                );
+
+                return View(model);
+            }
+
+            if (user.Role == null || !user.Role.IsActive)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "Your role is inactive or unavailable."
+                );
+
+                return View(model);
+            }
+
+            HttpContext.Session.SetInt32(
+                "UserId",
+                user.UserId
+            );
+
+            HttpContext.Session.SetString(
+                "FullName",
+                user.FullName
+            );
+
+            HttpContext.Session.SetString(
+                "Email",
+                user.Email
+            );
+
+            HttpContext.Session.SetInt32(
+                "RoleId",
+                user.RoleId
+            );
+
+            HttpContext.Session.SetString(
+                "RoleName",
+                user.Role.RoleName
+            );
+
+            TempData["LoginSuccessMessage"] =
+                $"Welcome, {user.FullName}!";
+
+            switch (user.Role.RoleName)
+            {
+                case "Admin":
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Admin"
+                    );
+
+                case "Coach":
+                    return RedirectToAction(
+                        "Dashboard",
+                        "Coach"
+                    );
+
+                case "User":
+                    return RedirectToAction(
+                        "Dashboard",
+                        "User"
+                    );
+
+                default:
+                    HttpContext.Session.Clear();
+
+                    ModelState.AddModelError(
+                        string.Empty,
+                        "Invalid user role."
+                    );
+
+                    return View(model);
+            }
+        }
+
         private async Task LoadCountries()
         {
             ViewBag.Countries = await _context.Countries

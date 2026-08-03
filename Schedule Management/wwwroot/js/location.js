@@ -1,33 +1,94 @@
-﻿$("#StateId").change(function () {
+﻿$(document).ready(function () {
 
-    const stateId = $(this).val();
+    // Country select hone par States lao
+    $("#CountryId").change(function () {
 
-    $("#DistrictId").empty();
+        const countryId = $(this).val();
 
-    $("#DistrictId").append(
-        '<option value="">Select District</option>'
-    );
+        $("#StateId").empty();
+        $("#DistrictId").empty();
 
-    if (!stateId) {
-        return;
-    }
+        $("#StateId").append(
+            '<option value="">Select State</option>'
+        );
 
-    $.ajax({
-        url: "/Location/GetDistricts",
-        type: "GET",
-        data: {
-            stateId: stateId
-        },
-        success: function (districts) {
+        $("#DistrictId").append(
+            '<option value="">Select District</option>'
+        );
 
-            $.each(districts, function (index, district) {
-                $("#DistrictId").append(
-                    `<option value="${district.districtId}">
-                            ${district.districtName}
-                        </option>`
-                );
-            });
+        if (!countryId) {
+            return;
         }
+
+        $.ajax({
+            url: "/Location/GetStates",
+            type: "GET",
+
+            data: {
+                countryId: countryId
+            },
+
+            success: function (states) {
+
+                $.each(states, function (index, state) {
+
+                    $("#StateId").append(
+                        `<option value="${state.stateId}">
+                            ${state.stateName}
+                        </option>`
+                    );
+                });
+            },
+
+            error: function () {
+                alert("Unable to load states.");
+            }
+        });
     });
-});
+
+
+    // State select hone par Districts lao
+    $("#StateId").change(function () {
+
+        const stateId = $(this).val();
+
+        $("#DistrictId").empty();
+
+        $("#DistrictId").append(
+            '<option value="">Select District</option>'
+        );
+
+        if (!stateId) {
+            return;
+        }
+
+        $.ajax({
+            url: "/Location/GetDistricts",
+            type: "GET",
+
+            data: {
+                stateId: stateId
+            },
+
+            success: function (districts) {
+
+                $.each(
+                    districts,
+                    function (index, district) {
+
+                        $("#DistrictId").append(
+                            `<option value="${district.districtId}">
+                                ${district.districtName}
+                            </option>`
+                        );
+                    }
+                );
+            },
+
+            error: function () {
+                alert("Unable to load districts.");
+            }
+        });
+    });
+
 });

@@ -13,10 +13,22 @@ namespace Schedule_Management
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<ScheduleManagementDbContext>(options =>
-            options.UseSqlServer(
-                builder.Configuration.GetConnectionString("DefaultConnection")
-            )
-);
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                )
+            );
+            //Session 
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout =
+                    TimeSpan.FromMinutes(30);
+
+                options.Cookie.HttpOnly = true;
+
+                options.Cookie.IsEssential = true;
+            });
 
             var app = builder.Build();
 
@@ -30,13 +42,13 @@ namespace Schedule_Management
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=Register}")
+                pattern: "{controller=Account}/{action=Login}")
                 .WithStaticAssets();
 
             app.Run();
