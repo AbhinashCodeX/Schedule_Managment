@@ -1,202 +1,229 @@
-# Schedule Management System
+# 🚀 Schedule Management System
 
-A role-based web application developed using **ASP.NET Core MVC** for managing coaches, users, activities, availability, locations, and activity bookings.
+<p align="center">
 
-The system allows:
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=.net)
+![Entity Framework](https://img.shields.io/badge/Entity%20Framework-Core-6DB33F?style=for-the-badge)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=for-the-badge&logo=microsoftsqlserver)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?style=for-the-badge&logo=bootstrap)
+![jQuery](https://img.shields.io/badge/jQuery-AJAX-0769AD?style=for-the-badge&logo=jquery)
 
-- Admins to manage users, coaches, locations, and activity types
-- Coaches to add their availability
-- Users to book activities based on coach, date, and available time
+</p>
 
----
-
-## Project Overview
-
-The **Schedule Management System** is designed to simplify the process of scheduling and booking sports or fitness activities.
-
-Users can register either as a:
-
-- User
-- Coach
-
-The application contains three roles:
-
-- Admin
-- Coach
-- User
-
-Each role has different permissions and responsibilities.
+<p align="center">
+A modern role-based scheduling and activity booking system built using <b>ASP.NET Core MVC</b>, <b>Entity Framework Core</b>, <b>SQL Server</b>, <b>Bootstrap</b>, <b>jQuery</b>, and <b>AJAX</b>.
+</p>
 
 ---
 
-## Technologies Used
+# ✨ Features
 
-- ASP.NET Core MVC
-- C#
-- Entity Framework Core
-- SQL Server
-- LINQ
-- HTML
-- CSS
-- Bootstrap
-- JavaScript
-- jQuery
-- AJAX
-- JSON
-- Model Binding
-- SweetAlert
-- Toast Notifications
+### 👨‍💼 Admin
+
+- 👥 Manage Users
+- 🏋️ Manage Coaches
+- 🌍 Manage Countries
+- 🗺️ Manage States
+- 📍 Manage Districts
+- ⚽ Manage Activity Types
+- 🔍 Search
+- 🎯 Filter
+- ↕️ Sort
+- 📄 Pagination
 
 ---
 
-## Concepts Implemented
+### 🏃 Coach
 
-This project demonstrates the following ASP.NET Core MVC concepts:
+- Register & Login
+- Manage Profile
+- Select Activity
+- Add Multiple Available Dates
+- Add Time Slots
+- Update Availability
+- View User Bookings
+
+---
+
+### 👤 User
+
+- Register & Login
+- Select Activity
+- Choose Coach
+- Select Date
+- Select Time Slot
+- Book Activity
+- Booking History
+
+---
+
+# 🛠 Tech Stack
+
+| Frontend | Backend | Database |
+|----------|----------|----------|
+| HTML5 | ASP.NET Core MVC | SQL Server |
+| CSS3 | Entity Framework Core | SSMS |
+| Bootstrap | LINQ | |
+| JavaScript | C# | |
+| jQuery | JSON | |
+| AJAX | MVC | |
+
+---
+
+# 📌 Project Workflow
+
+```text
+                Register
+                     │
+     ┌───────────────┼───────────────┐
+     │                               │
+  👤 User                       🏃 Coach
+     │                               │
+     └───────────────┬───────────────┘
+                     │
+                🔐 Login
+                     │
+        ┌────────────┴────────────┐
+        │                         │
+    Coach Dashboard         User Dashboard
+        │                         │
+ Add Availability          Book Activity
+        │                         │
+        └────────────┬────────────┘
+                     │
+                 Admin Panel
+                     │
+        Manage Everything
+```
+
+---
+
+# 🎯 Modules
+
+✅ Authentication
+
+✅ Registration
+
+✅ Login
+
+✅ Country → State → District Binding
+
+✅ Coach Availability
+
+✅ Activity Booking
+
+✅ User Management
+
+✅ Coach Management
+
+✅ Search
+
+✅ Sorting
+
+✅ Filtering
+
+✅ Pagination
+
+✅ SweetAlert
+
+✅ Toast Notifications
+
+---
+
+# 🧰 ASP.NET MVC Concepts Used
 
 - MVC Architecture
 - Entity Framework Core
-- Database First Approach
-- LINQ Queries
-- Dependency Injection
+- LINQ
+- AJAX
+- jQuery
+- JSON
 - Model Binding
-- ViewModels
-- Server-side Validation
-- Client-side Validation
-- AJAX Calls
-- JSON Responses
-- Cascading Dropdowns
+- ViewModel
 - ViewBag
 - ViewData
 - TempData
-- Session Management
-- Role-based Authorization
+- Session
+- Dependency Injection
 - Password Hashing
-- Search
-- Sorting
-- Filtering
-- Pagination
-- SweetAlert Confirmations
-- Toast Notifications
+- Client Validation
+- Server Validation
 
 ---
 
-# User Roles
-
-## 1. Admin
-
-The Admin manages the main data of the application.
-
-### Admin Features
-
-- View all users
-- View all coaches
-- Edit users
-- Edit coaches
-- Delete users
-- Delete coaches
-- Activate or deactivate accounts
-- Manage countries
-- Manage states
-- Manage districts
-- Manage activity types
-- Search records
-- Filter records
-- Sort records
-- View paginated lists
-
----
-
-## 2. Coach
-
-A Coach can register and provide availability for different activities.
-
-### Coach Features
-
-- Register as a Coach
-- Login to the application
-- Manage profile
-- Select an activity type
-- Add availability for multiple dates
-- Add start time
-- Add end time
-- View availability
-- Edit availability
-- Delete availability
-- View bookings made by users
-
-### Coach Availability Example
-
-A coach can select:
-
-- Activity Type: Football
-- Date: 10 August 2026
-- Start Time: 08:00 AM
-- End Time: 10:00 AM
-
-The coach can add availability for multiple dates.
-
----
-
-## 3. User
-
-A User can register and book available activities.
-
-### User Features
-
-- Register as a User
-- Login to the application
-- Manage profile
-- Select an activity type
-- View coaches based on the selected activity
-- Select an available coach
-- Select an available date
-- Select an available time
-- Book an activity
-- View booking history
-- Cancel a booking
-
----
-
-# Registration Module
-
-Both Coach and User can register through the registration page.
-
-### Registration Fields
-
-- Full Name
-- Email
-- Phone Number
-- Password
-- Confirm Password
-- Register As
-- Country
-- State
-- District
-- Full Address
-
-### Registration Flow
-
-1. User selects a role.
-2. User enters personal details.
-3. User selects a country.
-4. States are loaded using AJAX.
-5. User selects a state.
-6. Districts are loaded using AJAX.
-7. User enters the full address.
-8. Password is hashed before storing it in the database.
-9. Registration data is saved.
-
----
-
-# Location Management
-
-The application uses dependent or cascading dropdowns.
+# 🗄 Database Structure
 
 ```text
-Country
-   ↓
-State
-   ↓
-District
-   ↓
-Full Address
+Roles
+   │
+Users
+   │
+───────────────
+Countries
+   │
+States
+   │
+Districts
+   │
+Users
+
+ActivityTypes
+   │
+CoachActivities
+   │
+CoachAvailability
+   │
+Bookings
+```
+
+---
+
+# 📷 Screenshots
+
+> Add screenshots here
+
+### 📝 Registration Page
+
+```
+Screenshot Here
+```
+
+### 🔐 Login Page
+
+```
+Screenshot Here
+```
+
+### 👨‍💼 Admin Dashboard
+
+```
+Screenshot Here
+```
+
+### 📅 Booking Page
+
+```
+Screenshot Here
+```
+
+---
+
+# 🚀 Future Improvements
+
+- Email Verification
+- Forgot Password
+- REST API
+- Angular Frontend
+- Payment Integration
+- Notifications
+- Dashboard Charts
+- Rating & Reviews
+- Mobile App
+
+---
+
+# 👨‍💻 Author
+
+**Abhinash Panigrahi**
+
+⭐ If you like this project, don't forget to star the repository.
