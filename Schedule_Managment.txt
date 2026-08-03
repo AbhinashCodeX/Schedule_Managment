@@ -1,0 +1,29 @@
+Bootstrap, Ajax, JQery, MVC, JSON, Model Binding, Sweetalert, Toast,
+ViewBag, TempData, ViewData, Pagination, Filteration, Search, Sorting,
+
+
+Project: Schedule Management
+
+
+Register : Coach and User
+
+
+Role: Admin, Coach, User
+
+Admin -> User, Coach [Edit, Delete]
+Country, State, District [Add, Edit, Delete]
+Place -> Bind (Country -> State -> District -> Input Location with full address)
+ActivityType: Football, Cricket, Hockey, Yoga, 
+
+
+
+Coach:
+Availability -> (MultipleDate) Date and timerange and ActivityType
+
+
+
+User:
+Booking activity: 
+choose coach: auto bind dropdown [activity type], dropdown Dates, Dropdown Time
+
+
