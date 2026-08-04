@@ -214,6 +214,16 @@ namespace Schedule_Management.Controllers
             }
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["SuccessMessage"] = "You have been Logged out successfully";
+            return RedirectToAction(nameof(Login));
+        }
+
         private async Task LoadCountries()
         {
             ViewBag.Countries = await _context.Countries
