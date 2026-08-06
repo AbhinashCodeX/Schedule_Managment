@@ -34,7 +34,7 @@ namespace Schedule_Management.ViewModels
 
         [Required(ErrorMessage = "Full address is required.")]
         [StringLength(
-            100,
+            500,
             ErrorMessage = "Address cannot exceed 500 characters."
         )]
         public string FullAddress { get; set; } = string.Empty;

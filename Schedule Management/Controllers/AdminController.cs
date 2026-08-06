@@ -52,7 +52,6 @@ namespace Schedule_Management.Controllers
                 );
             }
 
-
             var users = await _context.Users
                 .AsNoTracking()
                 .Where(u =>
@@ -66,6 +65,11 @@ namespace Schedule_Management.Controllers
                     Email = u.Email,
                     PhoneNumber = u.PhoneNumber,
                     RoleName = u.Role.RoleName,
+
+                    DistrictName = u.District != null
+                        ? u.District.DistrictName
+                        : "Not Available",
+
                     IsActive = u.IsActive,
                     CreatedOn = u.CreatedOn
                 })
