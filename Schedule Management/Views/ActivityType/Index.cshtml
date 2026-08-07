@@ -6,125 +6,125 @@
 
 
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-1">
-                <i class="bi bi-list-check"></i>
-                Manage Activity Types
-            </h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-list-check"></i>
+            Manage Activity Types
+        </h2>
 
-            <p class="text-muted mb-0">
-                Add and manage available sports and activities.
-            </p>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a asp-controller="Admin"
-               asp-action="Dashboard"
-               class="btn btn-outline-secondary">
-
-                <i class="bi bi-arrow-left"></i>
-                Dashboard
-            </a>
-
-            <a asp-controller="ActivityType"
-               asp-action="Create"
-               class="btn btn-primary">
-
-                <i class="bi bi-plus-circle"></i>
-                Add Activity
-            </a>
-        </div>
+        <p class="text-muted mb-0">
+            Add and manage available sports and activities.
+        </p>
     </div>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
+    <div class="d-flex gap-2">
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="btn btn-outline-secondary">
 
-            <!-- Search + Filter Form -->
-            <form method="get"
-                  asp-controller="ActivityType"
-                  asp-action="Index"
-                  class="row g-3 mb-4">
+            <i class="bi bi-arrow-left"></i>
+            Dashboard
+        </a>
+
+        <a asp-controller="ActivityType"
+           asp-action="Create"
+           class="btn btn-primary">
+
+            <i class="bi bi-plus-circle"></i>
+            Add Activity
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+
+        <!-- Search + Filter Form -->
+        <form method="get"
+              asp-controller="ActivityType"
+              asp-action="Index"
+              class="row g-3 mb-4">
 
             <input type="hidden"
                    name="sortOrder"
                    value="@ViewBag.SortOrder" />
 
-                <div class="col-md-5">
-                    <label class="form-label fw-semibold">
-                        Search Activity
-                    </label>
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">
+                    Search Activity
+                </label>
 
-                    <input type="text"
-                           name="search"
-                           value="@ViewBag.Search"
-                           class="form-control"
-                           placeholder="Search by activity name..." />
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">
-                        Status
-                    </label>
-
-                    <select name="status"
-                            class="form-select">
-
-                        <option value="">All</option>
-
-                        <option value="Active"
-                                selected="@(ViewBag.Status == "Active")">
-                            Active
-                        </option>
-
-                        <option value="Inactive"
-                                selected="@(ViewBag.Status == "Inactive")">
-                            Inactive
-                        </option>
-
-                    </select>
-                </div>
-
-                <div class="col-md-4 d-flex align-items-end gap-2">
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        <i class="bi bi-search"></i>
-                        Search
-                    </button>
-
-                    <a asp-controller="ActivityType"
-                       asp-action="Index"
-                       class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        Reset
-                    </a>
-
-                </div>
-
-            </form>
-
-            <!--Ye sirf count krega Data-->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted">
-                    Total Records:
-                    <span class="badge bg-primary">
-                        @ViewBag.TotalRecords
-                    </span>
-                </span>
+                <input type="text"
+                       name="search"
+                       value="@ViewBag.Search"
+                       class="form-control"
+                       placeholder="Search by activity name..." />
             </div>
 
-            @if (!Model.Any())
-            {
-                <div class="alert alert-info mb-0">
-                    No activity types found.
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
+            <div class="col-md-3">
+                <label class="form-label fw-semibold">
+                    Status
+                </label>
 
-                    <table class="table table-hover align-middle">
+                <select name="status"
+                        class="form-select">
+
+                    <option value="">All</option>
+
+                    <option value="Active"
+                            selected="@(ViewBag.Status == "Active")">
+                        Active
+                    </option>
+
+                    <option value="Inactive"
+                            selected="@(ViewBag.Status == "Inactive")">
+                        Inactive
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end gap-2">
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    <i class="bi bi-search"></i>
+                    Search
+                </button>
+
+                <a asp-controller="ActivityType"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Reset
+                </a>
+
+            </div>
+
+        </form>
+
+        <!--Ye sirf count krega Data-->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">
+                Total Records:
+                <span class="badge bg-primary">
+                    @ViewBag.TotalRecords
+                </span>
+            </span>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info mb-0">
+                No activity types found.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
 
                     <thead class="table-dark">
                         <tr>
@@ -136,8 +136,8 @@
                                    asp-route-search="@ViewBag.Search"
                                    asp-route-status="@ViewBag.Status"
                                    asp-route-sortOrder="@(ViewBag.SortOrder == "name_asc"
-                                                       ? "name_desc"
-                                                       : "name_asc")"
+                                                                                          ? "name_desc"
+                                                                                          : "name_asc")"
                                    asp-route-page="1"
                                    class="text-white text-decoration-none">
 
@@ -162,8 +162,8 @@
                                    asp-route-search="@ViewBag.Search"
                                    asp-route-status="@ViewBag.Status"
                                    asp-route-sortOrder="@(ViewBag.SortOrder == "date_asc"
-                                                       ? "date_desc"
-                                                       : "date_asc")"
+                                                                                          ? "date_desc"
+                                                                                          : "date_asc")"
                                    asp-route-page="1"
                                    class="text-white text-decoration-none">
 
@@ -184,103 +184,160 @@
                         </tr>
                     </thead>
 
-                        <tbody>
+                    <tbody>
 
-                            @{
-                                int serialNumber = 1;
-                            }
+                        @{
+                            int pageSize = 5;
 
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td>@serialNumber</td>
+                            int serialNumber =
+                                ((int)ViewBag.CurrentPage - 1)
+                                * pageSize + 1;
+                        }
 
-                                    <td>
-                                        <strong>
-                                            @item.ActivityName
-                                        </strong>
-                                    </td>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@serialNumber</td>
 
-                                    <td>
-                                        @if (item.IsActive)
-                                        {
-                                            <span class="badge bg-success">
-                                                Active
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">
-                                                Inactive
-                                            </span>
-                                        }
-                                    </td>
+                                <td>
+                                    <strong>
+                                        @item.ActivityName
+                                    </strong>
+                                </td>
 
-                                    <td>
-                                        @(item.CreatedOn.HasValue
-                                            ? item.CreatedOn.Value
-                                                .ToString("dd MMM yyyy")
-                                            : "Not available")
-                                    </td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
 
-                                    <td>
-                                        <div class="d-flex gap-2">
+                                <td>
+                                    @(item.CreatedOn.HasValue
+                                        ? item.CreatedOn.Value
+                                            .ToString("dd MMM yyyy")
+                                        : "Not available")
+                                </td>
 
-                                            <a asp-controller="ActivityType"
-                                               asp-action="Edit"
-                                               asp-route-id="@item.ActivityTypeId"
-                                               class="btn btn-sm btn-warning">
+                                <td>
+                                    <div class="d-flex gap-2">
 
-                                                <i class="bi bi-pencil-square"></i>
-                                                Edit
-                                            </a>
+                                        <a asp-controller="ActivityType"
+                                           asp-action="Edit"
+                                           asp-route-id="@item.ActivityTypeId"
+                                           class="btn btn-sm btn-warning">
 
-                                            <form asp-controller="ActivityType"
-                                                  asp-action="ToggleStatus"
-                                                  asp-route-id="@item.ActivityTypeId"
-                                                  method="post"
-                                                  class="toggle-status-form"
-                                                  data-activity-name="@item.ActivityName"
-                                                  data-is-active="@item.IsActive.ToString().ToLower()">
+                                            <i class="bi bi-pencil-square"></i>
+                                            Edit
+                                        </a>
 
-                                                @Html.AntiForgeryToken()
+                                        <form asp-controller="ActivityType"
+                                              asp-action="ToggleStatus"
+                                              asp-route-id="@item.ActivityTypeId"
+                                              method="post"
+                                              class="toggle-status-form"
+                                              data-activity-name="@item.ActivityName"
+                                              data-is-active="@item.IsActive.ToString().ToLower()">
 
-                                                @if (item.IsActive)
-                                                {
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-danger">
+                                            @Html.AntiForgeryToken()
 
-                                                        <i class="bi bi-x-circle"></i>
-                                                        Deactivate
-                                                    </button>
-                                                }
-                                                else
-                                                {
-                                                    <button type="submit"
-                                                            class="btn btn-sm btn-success">
+                                            @if (item.IsActive)
+                                            {
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-danger">
 
-                                                        <i class="bi bi-check-circle"></i>
-                                                        Activate
-                                                    </button>
-                                                }
+                                                    <i class="bi bi-x-circle"></i>
+                                                    Deactivate
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-success">
 
-                                            </form>
+                                                    <i class="bi bi-check-circle"></i>
+                                                    Activate
+                                                </button>
+                                            }
 
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </form>
 
-                                serialNumber++;
-                            }
+                                    </div>
+                                </td>
+                            </tr>
 
-                        </tbody>
-                    </table>
+                            serialNumber++;
+                        }
 
-                </div>
+                    </tbody>
+                </table>
+
+            </div>
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-controller="ActivityType"
+                               asp-action="Index"
+                               asp-route-page="@(ViewBag.CurrentPage - 1)"
+                               asp-route-search="@ViewBag.Search"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-sortOrder="@ViewBag.SortOrder">
+
+                                Previous
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+
+                                <a class="page-link"
+                                   asp-controller="ActivityType"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+
+                                    @i
+                                </a>
+
+                            </li>
+                        }
+
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-controller="ActivityType"
+                               asp-action="Index"
+                               asp-route-page="@(ViewBag.CurrentPage + 1)"
+                               asp-route-search="@ViewBag.Search"
+                               asp-route-status="@ViewBag.Status"
+                               asp-route-sortOrder="@ViewBag.SortOrder">
+
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
             }
+        }
 
-        </div>
     </div>
+</div>
 @*Sweet Alert Js*@
 @section Scripts {
     <script>
