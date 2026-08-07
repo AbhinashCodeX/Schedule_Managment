@@ -17,7 +17,11 @@ namespace Schedule_Management.Controllers
 
         // Activity Type List
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+         string? search,
+         string? status,
+         string sortOrder = "name_asc",
+         int page = 1)
         {
             string? roleName =
                 HttpContext.Session.GetString("RoleName");
@@ -30,19 +34,100 @@ namespace Schedule_Management.Controllers
                 );
             }
 
-            var activities = await _context.ActivityTypes
-                .AsNoTracking()   //make the query read-only and improve performance
-                .OrderByDescending(a => a.CreatedOn) // order by CreatedOn in descending order
-                .Select(a => new ActivityTypeViewModel //project to the view model
-                {
-                    ActivityTypeId = a.ActivityTypeId,//map the ActivityTypeId property
-                    ActivityName = a.ActivityName,//map the ActivityName property
-                    IsActive = a.IsActive,//map the IsActive property
-                    CreatedOn = a.CreatedOn//map the CreatedOn property
-                })
-                .ToListAsync();//execute the query and return the results as a list
+            const int pageSize = 5;
 
-            return View(activities);//pass the list of activities to the view
+            var query = _context.ActivityTypes
+                .AsNoTracking()
+                .AsQueryable();
+
+            // -------------------------
+            // SEARCH
+            // -------------------------
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(a =>
+                    a.ActivityName.Contains(search));
+            }
+
+            // -------------------------
+            // FILTER
+            // -------------------------
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == "Active")
+                {
+                    query = query.Where(a => a.IsActive);
+                }
+                else if (status == "Inactive")
+                {
+                    query = query.Where(a => !a.IsActive);
+                }
+            }
+
+            // -------------------------
+            // SORTING
+            // -------------------------
+            query = sortOrder switch
+            {
+                "name_desc" =>
+                    query.OrderByDescending(a => a.ActivityName),
+
+                "date_asc" =>
+                    query.OrderBy(a => a.CreatedOn),
+
+                "date_desc" =>
+                    query.OrderByDescending(a => a.CreatedOn),
+
+                _ =>
+                    query.OrderBy(a => a.ActivityName)
+            };
+
+            // -------------------------
+            // PAGINATION
+            // -------------------------
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(
+                    totalRecords / (double)pageSize
+                );
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (totalPages > 0 && page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var activities = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(a => new ActivityTypeViewModel
+                {
+                    ActivityTypeId = a.ActivityTypeId,
+                    ActivityName = a.ActivityName,
+                    IsActive = a.IsActive,
+                    CreatedOn = a.CreatedOn
+                })
+                .ToListAsync();
+
+            // -------------------------
+            // VIEW DATA
+            // -------------------------
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+            ViewBag.SortOrder = sortOrder;
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
+            return View(activities);
         }
 
         // Create Page
@@ -195,7 +280,10 @@ namespace Schedule_Management.Controllers
 
             if (activity == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] =
+                  "Activity type was not found.";
+
+                return RedirectToAction(nameof(Index));
             }
 
             string activityName =
@@ -257,7 +345,10 @@ namespace Schedule_Management.Controllers
 
             if (activity == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] =
+               "Activity type was not found.";
+
+                return RedirectToAction(nameof(Index));
             }
 
             activity.IsActive = !activity.IsActive;

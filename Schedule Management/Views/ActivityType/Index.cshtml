@@ -4,7 +4,7 @@
     ViewData["Title"] = "Activity Types";
 }
 
-<div class="container mt-4">
+
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -37,20 +37,82 @@
         </div>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["SuccessMessage"]
-
-            <button type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert">
-            </button>
-        </div>
-    }
-
     <div class="card shadow-sm border-0">
         <div class="card-body">
+
+            <!-- Search + Filter Form -->
+            <form method="get"
+                  asp-controller="ActivityType"
+                  asp-action="Index"
+                  class="row g-3 mb-4">
+
+            <input type="hidden"
+                   name="sortOrder"
+                   value="@ViewBag.SortOrder" />
+
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">
+                        Search Activity
+                    </label>
+
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Search by activity name..." />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">
+                        Status
+                    </label>
+
+                    <select name="status"
+                            class="form-select">
+
+                        <option value="">All</option>
+
+                        <option value="Active"
+                                selected="@(ViewBag.Status == "Active")">
+                            Active
+                        </option>
+
+                        <option value="Inactive"
+                                selected="@(ViewBag.Status == "Inactive")">
+                            Inactive
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-end gap-2">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
+
+                    <a asp-controller="ActivityType"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+            <!--Ye sirf count krega Data-->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">
+                    Total Records:
+                    <span class="badge bg-primary">
+                        @ViewBag.TotalRecords
+                    </span>
+                </span>
+            </div>
 
             @if (!Model.Any())
             {
@@ -64,15 +126,63 @@
 
                     <table class="table table-hover align-middle">
 
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Activity Name</th>
-                                <th>Status</th>
-                                <th>Created On</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+
+                            <th>
+                                <a asp-controller="ActivityType"
+                                   asp-action="Index"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-sortOrder="@(ViewBag.SortOrder == "name_asc"
+                                                       ? "name_desc"
+                                                       : "name_asc")"
+                                   asp-route-page="1"
+                                   class="text-white text-decoration-none">
+
+                                    Activity Name
+
+                                    @if (ViewBag.SortOrder == "name_asc")
+                                    {
+                                        <i class="bi bi-arrow-up"></i>
+                                    }
+                                    else if (ViewBag.SortOrder == "name_desc")
+                                    {
+                                        <i class="bi bi-arrow-down"></i>
+                                    }
+                                </a>
+                            </th>
+
+                            <th>Status</th>
+
+                            <th>
+                                <a asp-controller="ActivityType"
+                                   asp-action="Index"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-sortOrder="@(ViewBag.SortOrder == "date_asc"
+                                                       ? "date_desc"
+                                                       : "date_asc")"
+                                   asp-route-page="1"
+                                   class="text-white text-decoration-none">
+
+                                    Created On
+
+                                    @if (ViewBag.SortOrder == "date_asc")
+                                    {
+                                        <i class="bi bi-arrow-up"></i>
+                                    }
+                                    else if (ViewBag.SortOrder == "date_desc")
+                                    {
+                                        <i class="bi bi-arrow-down"></i>
+                                    }
+                                </a>
+                            </th>
+
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
 
                         <tbody>
 
@@ -128,7 +238,10 @@
                                             <form asp-controller="ActivityType"
                                                   asp-action="ToggleStatus"
                                                   asp-route-id="@item.ActivityTypeId"
-                                                  method="post">
+                                                  method="post"
+                                                  class="toggle-status-form"
+                                                  data-activity-name="@item.ActivityName"
+                                                  data-is-active="@item.IsActive.ToString().ToLower()">
 
                                                 @Html.AntiForgeryToken()
 
@@ -168,4 +281,55 @@
 
         </div>
     </div>
-</div>
+@*Sweet Alert Js*@
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+
+            $(".toggle-status-form").on("submit", function(event) {
+
+                event.preventDefault();
+
+                const form = this;
+
+                const activityName =
+                    $(form).data("activity-name");
+
+                const isActive =
+                    $(form).data("is-active") === true ||
+                    $(form).data("is-active") === "true";
+
+                const actionText = isActive
+                    ? "deactivate"
+                    : "activate";
+
+                const buttonText = isActive
+                    ? "Yes, deactivate"
+                    : "Yes, activate";
+
+                const confirmColor = isActive
+                    ? "#dc3545"
+                    : "#198754";
+
+                Swal.fire({
+                    title: `Are you sure?`,
+                    text: `Do you want to ${actionText} ${activityName}?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: confirmColor,
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: buttonText,
+                    cancelButtonText: "Cancel",
+                    reverseButtons: true
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+
+                });
+            });
+
+        });
+    </script>
+}

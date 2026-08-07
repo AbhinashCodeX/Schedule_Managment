@@ -1,20 +1,32 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
 
     <title>@ViewData["Title"] - Schedule Management</title>
 
-    <script type="importmap"></script>
 
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
+
+    <!-- Toastr CSS -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
+    <!-- Project CSS -->
     <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
@@ -22,14 +34,14 @@
     <link rel="stylesheet"
           href="~/Schedule_Management.styles.css"
           asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
+
 
 <body>
 
+    <!-- Navbar -->
     <header>
+
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom shadow-sm mb-3">
 
             <div class="container-fluid">
@@ -40,9 +52,11 @@
                    asp-action="Index">
 
                     <i class="bi bi-calendar-check"></i>
+
                     Schedule Management
 
                 </a>
+
 
                 <!-- Mobile Navbar Button -->
                 <button class="navbar-toggler"
@@ -57,71 +71,89 @@
 
                 </button>
 
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
                     <!-- Left Side Menu -->
                     <ul class="navbar-nav">
 
                         <li class="nav-item">
+
                             <a class="nav-link text-dark"
                                asp-controller="Home"
                                asp-action="Index">
 
                                 <i class="bi bi-house"></i>
+
                                 Home
 
                             </a>
+
                         </li>
+
 
                         @if (Context.Session.GetInt32("UserId") != null)
                         {
                             string? roleName =
                                 Context.Session.GetString("RoleName");
 
+
                             if (roleName == "Admin")
                             {
                                 <li class="nav-item">
+
                                     <a class="nav-link text-dark"
                                        asp-controller="Admin"
                                        asp-action="Dashboard">
 
                                         <i class="bi bi-speedometer2"></i>
+
                                         Admin Dashboard
 
                                     </a>
+
                                 </li>
                             }
+
 
                             if (roleName == "Coach")
                             {
                                 <li class="nav-item">
+
                                     <a class="nav-link text-dark"
                                        asp-controller="Coach"
                                        asp-action="Dashboard">
 
                                         <i class="bi bi-person-badge"></i>
+
                                         Coach Dashboard
 
                                     </a>
+
                                 </li>
                             }
+
 
                             if (roleName == "User")
                             {
                                 <li class="nav-item">
+
                                     <a class="nav-link text-dark"
                                        asp-controller="User"
                                        asp-action="Dashboard">
 
                                         <i class="bi bi-person"></i>
+
                                         User Dashboard
 
                                     </a>
+
                                 </li>
                             }
                         }
 
                     </ul>
+
 
                     <!-- Right Side Menu -->
                     <ul class="navbar-nav">
@@ -130,17 +162,21 @@
                         {
                             <!-- Logged-in User Name -->
                             <li class="nav-item">
+
                                 <span class="nav-link text-dark">
 
                                     <i class="bi bi-person-circle"></i>
 
                                     Welcome,
+
                                     <strong>
                                         @Context.Session.GetString("FullName")
                                     </strong>
 
                                 </span>
+
                             </li>
+
 
                             <!-- Logout Form -->
                             <li class="nav-item">
@@ -155,6 +191,7 @@
                                             class="btn btn-link nav-link text-danger border-0">
 
                                         <i class="bi bi-box-arrow-right"></i>
+
                                         Logout
 
                                     </button>
@@ -167,39 +204,50 @@
                         {
                             <!-- Login Link -->
                             <li class="nav-item">
+
                                 <a class="nav-link text-dark"
                                    asp-controller="Account"
                                    asp-action="Login">
 
                                     <i class="bi bi-box-arrow-in-right"></i>
+
                                     Login
 
                                 </a>
+
                             </li>
+
 
                             <!-- Register Link -->
                             <li class="nav-item">
+
                                 <a class="nav-link text-dark"
                                    asp-controller="Account"
                                    asp-action="Register">
 
                                     <i class="bi bi-person-plus"></i>
+
                                     Register
 
                                 </a>
+
                             </li>
                         }
 
                     </ul>
 
                 </div>
+
             </div>
+
         </nav>
+
     </header>
 
 
+
     <!-- Page Content -->
-    <div class="container">
+    <div class="p-4">
 
         <main role="main" class="pb-3">
 
@@ -208,6 +256,7 @@
         </main>
 
     </div>
+
 
 
     <!-- Footer -->
@@ -222,15 +271,118 @@
     </footer>
 
 
+
+    <!-- jQuery -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
+
+    <!-- Bootstrap JavaScript -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <!-- Toastr JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <!-- Toastr Configuration -->
+    <script>
+
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                newestOnTop: true,
+                preventDuplicates: true,
+                positionClass: "toast-top-right",
+                timeOut: 3500,
+                extendedTimeOut: 1000,
+                showDuration: 300,
+                hideDuration: 300
+            };
+
+    </script>
+
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <script>
+
+                toastr.success(
+                    @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(
+                    successMessage
+                    )
+                    )
+                            );
+
+        </script>
+    }
+
+
+    <!-- Error Message -->
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <script>
+
+                toastr.error(
+                    @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(
+                    errorMessage
+                    )
+                    )
+                            );
+
+        </script>
+    }
+
+
+    <!-- Warning Message -->
+    @if (TempData["WarningMessage"] is string warningMessage)
+    {
+        <script>
+
+                toastr.warning(
+                    @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(
+                    warningMessage
+                    )
+                    )
+                            );
+
+        </script>
+    }
+
+
+    <!-- Information Message -->
+    @if (TempData["InfoMessage"] is string infoMessage)
+    {
+        <script>
+
+                toastr.info(
+                    @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(
+                    infoMessage
+                    )
+                    )
+                    );
+
+        </script>
+    }
+
+
+    <!-- Project JavaScript -->
     <script src="~/js/site.js"
             asp-append-version="true">
     </script>
 
+
+    <!-- Page Specific JavaScript -->
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+
 </html>
