@@ -1,296 +1,606 @@
 ﻿@model Schedule_Management.ViewModels.RegisterViewModel
+
 @{
     ViewData["Title"] = "Register";
     Layout = null;
 }
 
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Schedule Management</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Schedule_Management.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Register - Schedule Management</title>
+
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 
     <style>
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
             body {
-                position: relative;
+                margin: 0;
+                min-height: 100%;
+                font-family: Inter, "Segoe UI", sans-serif;
+            }
+
+            body {
+                background: #eff5f9;
+                color: #172033;
                 overflow-x: hidden;
-                background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 30%), radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.16), transparent 30%), linear-gradient(135deg, #f8fafc, #eef2ff);
-                min-height: 100vh;
             }
 
-            .register-wrapper {
-                padding: 50px 12px;
-            }
 
-            .register-card {
-                border: none;
-                border-radius: 24px;
+            /* =====================================
+                                   BACKGROUND
+                                ====================================== */
+
+            .page-background {
+                position: fixed;
+                inset: 0;
+                z-index: -5;
                 overflow: hidden;
-                background: rgba(255, 255, 255, 0.92);
-                backdrop-filter: blur(15px);
-                box-shadow: 0 20px 60px rgba(15, 23, 42, 0.15);
-                animation: cardEnter 0.8s ease;
+                background: radial-gradient(circle at 10% 10%, rgba(37,99,235,.12), transparent 28%), radial-gradient(circle at 90% 90%, rgba(14,165,233,.14), transparent 30%), linear-gradient(135deg, #f4f9ff, #edf7f8);
             }
 
-            .register-header {
-                position: relative;
-                padding: 35px 25px;
-                color: white;
-                text-align: center;
-                overflow: hidden;
-                background: linear-gradient(135deg, #4f46e5, #2563eb, #0ea5e9);
-            }
-
-                .register-header::before,
-                .register-header::after {
+                .page-background::before {
                     content: "";
                     position: absolute;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.12);
+                    inset: 0;
+                    opacity: .35;
+                    background-image: linear-gradient(rgba(45,91,126,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(45,91,126,.06) 1px, transparent 1px);
+                    background-size: 50px 50px;
+                    animation: gridMove 20s linear infinite;
                 }
 
-                .register-header::before {
-                    width: 180px;
-                    height: 180px;
-                    top: -90px;
-                    left: -50px;
-                    animation: floatCircle 6s ease-in-out infinite;
-                }
 
-                .register-header::after {
-                    width: 130px;
-                    height: 130px;
-                    right: -35px;
-                    bottom: -65px;
-                    animation: floatCircle 5s ease-in-out infinite reverse;
-                }
-
-            .register-icon {
-                width: 70px;
-                height: 70px;
-                margin: 0 auto 15px;
+            .ambient-ball {
+                position: absolute;
                 border-radius: 50%;
+                filter: blur(15px);
+            }
+
+            .ambient-one {
+                width: 360px;
+                height: 360px;
+                left: -130px;
+                top: -130px;
+                background: rgba(37,99,235,.14);
+                animation: ambientMove 12s ease-in-out infinite;
+            }
+
+            .ambient-two {
+                width: 420px;
+                height: 420px;
+                bottom: -170px;
+                right: -160px;
+                background: rgba(14,165,233,.16);
+                animation: ambientMove 14s ease-in-out infinite reverse;
+            }
+
+
+            /* =====================================
+                                   WRAPPER
+                                ====================================== */
+
+            .register-page {
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 34px 20px;
+            }
+
+
+            .register-shell {
+                width: min(1360px, 100%);
+                min-height: 790px;
+                display: grid;
+                grid-template-columns: 420px 1fr;
+                overflow: hidden;
+                border-radius: 32px;
+                background: white;
+                box-shadow: 0 30px 90px rgba(24,54,79,.16);
+                animation: shellEnter .75s ease;
+            }
+
+
+            /* =====================================
+                                   SPORTS PANEL
+                                ====================================== */
+
+            .sports-panel {
+                min-height: 790px;
+                position: relative;
+                overflow: hidden;
+                padding: 38px;
+                color: white;
+                background: linear-gradient( 180deg, rgba(5,20,34,.08), rgba(5,20,34,.58) ), url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1200&q=90') center/cover no-repeat;
+            }
+
+
+                .sports-panel::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: radial-gradient( circle at 30% 30%, rgba(255,255,255,.08), transparent 28% );
+                }
+
+
+            /* pulse rings */
+
+            .pulse-ring {
+                position: absolute;
+                width: 210px;
+                height: 210px;
+                top: 210px;
+                left: 105px;
+                border-radius: 50%;
+                border: 1px solid rgba(255,255,255,.26);
+                animation: sportsPulse 3s ease-out infinite;
+            }
+
+            .pulse-ring-two {
+                animation-delay: 1.5s;
+            }
+
+
+            /* brand */
+
+            .sports-brand {
+                position: relative;
+                z-index: 4;
                 display: flex;
                 align-items: center;
+                gap: 11px;
+            }
+
+            .brand-icon {
+                width: 43px;
+                height: 43px;
+                display: flex;
                 justify-content: center;
-                font-size: 30px;
-                background: rgba(255, 255, 255, 0.18);
-                border: 1px solid rgba(255, 255, 255, 0.3);
+                align-items: center;
+                border: 1px solid rgba(255,255,255,.30);
+                border-radius: 14px;
+                background: rgba(7,28,43,.33);
+                backdrop-filter: blur(12px);
+                font-size: 20px;
+            }
+
+            .brand-text {
+                font-weight: 850;
+                letter-spacing: -.3px;
+            }
+
+
+            /* Live badge */
+
+            .sports-live {
+                position: absolute;
+                z-index: 4;
+                top: 38px;
+                right: 34px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 11px;
+                border: 1px solid rgba(255,255,255,.25);
+                border-radius: 100px;
+                background: rgba(5,22,36,.40);
+                backdrop-filter: blur(12px);
+                font-size: 10px;
+                font-weight: 800;
+                letter-spacing: .8px;
+            }
+
+            .live-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #ff435c;
+                animation: redPulse 1.4s infinite;
+            }
+
+
+            /* floating sport balls */
+
+            .floating-sport {
+                position: absolute;
+                z-index: 4;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid rgba(255,255,255,.25);
+                border-radius: 18px;
+                background: rgba(5,25,39,.33);
+                backdrop-filter: blur(14px);
+                box-shadow: 0 16px 35px rgba(0,0,0,.13);
+                animation: floatingSport 4s ease-in-out infinite;
+            }
+
+            .floating-football {
+                width: 56px;
+                height: 56px;
+                top: 175px;
+                left: 50px;
+                font-size: 27px;
+            }
+
+            .floating-cricket {
+                width: 62px;
+                height: 62px;
+                right: 38px;
+                top: 275px;
+                font-size: 28px;
+                animation-delay: .8s;
+            }
+
+            .floating-basketball {
+                width: 52px;
+                height: 52px;
+                left: 68px;
+                top: 385px;
+                font-size: 24px;
+                animation-delay: 1.5s;
+            }
+
+
+            /* sports bottom content */
+
+            .sports-content {
+                position: absolute;
+                z-index: 4;
+                left: 38px;
+                right: 38px;
+                bottom: 42px;
+            }
+
+                .sports-content h2 {
+                    margin-bottom: 14px;
+                    font-size: 36px;
+                    line-height: 1.08;
+                    font-weight: 850;
+                    letter-spacing: -1px;
+                }
+
+                .sports-content > p {
+                    max-width: 330px;
+                    margin-bottom: 22px;
+                    color: rgba(255,255,255,.76);
+                    font-size: 13px;
+                    line-height: 1.65;
+                }
+
+
+            /* event list */
+
+            .event-row {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                margin-top: 10px;
+                padding: 11px 13px;
+                border: 1px solid rgba(255,255,255,.19);
+                border-radius: 14px;
+                background: rgba(7,25,38,.35);
+                backdrop-filter: blur(15px);
+            }
+
+            .event-sport-icon {
+                width: 37px;
+                height: 37px;
+                flex: 0 0 37px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 11px;
+                background: rgba(255,255,255,.12);
+            }
+
+            .event-details {
+                flex: 1;
+            }
+
+                .event-details strong {
+                    display: block;
+                    font-size: 11px;
+                }
+
+                .event-details span {
+                    display: block;
+                    margin-top: 2px;
+                    color: rgba(255,255,255,.60);
+                    font-size: 9px;
+                }
+
+            .availability {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                color: #adffd1;
+                font-size: 8px;
+                font-weight: 850;
+            }
+
+                .availability span {
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 50%;
+                    background: #27dc88;
+                    animation: greenPulse 1.5s infinite;
+                }
+
+
+            /* =====================================
+                                   FORM PANEL
+                                ====================================== */
+
+            .form-panel {
                 position: relative;
-                z-index: 2;
+                padding: 45px 55px 40px;
+                background: #fff;
             }
 
-            .register-header h2,
-            .register-header p {
-                position: relative;
-                z-index: 2;
+            .form-heading {
+                margin-bottom: 30px;
             }
 
-            .register-header h2 {
-                font-weight: 700;
-                margin-bottom: 8px;
+            .mini-title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 9px;
+                color: #718096;
+                font-size: 11px;
+                font-weight: 850;
+                letter-spacing: 1.3px;
+                text-transform: uppercase;
             }
 
-            .register-header p {
+                .mini-title span {
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 50%;
+                    background: #20c77b;
+                    animation: greenPulse 1.5s infinite;
+                }
+
+            .form-heading h1 {
                 margin: 0;
-                color: rgba(255, 255, 255, 0.85);
+                color: #101828;
+                font-size: 37px;
+                font-weight: 850;
+                letter-spacing: -1.2px;
             }
 
-            .register-body {
-                padding: 35px;
+                .form-heading h1 span {
+                    color: #1689e9;
+                }
+
+            .form-heading p {
+                margin: 9px 0 0;
+                color: #8a95a6;
+                font-size: 13px;
             }
+
+
+            /* =====================================
+                                   SECTION HEADING
+                                ====================================== */
 
             .section-title {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                margin: 20px 0 15px;
-                color: #1e293b;
-                font-size: 17px;
-                font-weight: 700;
+                gap: 9px;
+                margin: 25px 0 15px;
+                color: #344054;
+                font-size: 13px;
+                font-weight: 800;
             }
+
+                .section-title i {
+                    color: #1689e9;
+                }
 
                 .section-title::after {
                     content: "";
                     height: 1px;
-                    flex-grow: 1;
-                    background: linear-gradient(to right, #cbd5e1, transparent);
+                    flex: 1;
+                    background: linear-gradient( 90deg, #e3eaf1, transparent );
                 }
+
+
+            /* =====================================
+                                   INPUTS
+                                ====================================== */
 
             .form-group-custom {
-                position: relative;
-                margin-bottom: 20px;
-                animation: fieldEnter 0.6s ease both;
+                margin-bottom: 16px;
             }
-
-                .form-group-custom:nth-child(1) {
-                    animation-delay: 0.05s;
-                }
-
-                .form-group-custom:nth-child(2) {
-                    animation-delay: 0.10s;
-                }
-
-                .form-group-custom:nth-child(3) {
-                    animation-delay: 0.15s;
-                }
-
-                .form-group-custom:nth-child(4) {
-                    animation-delay: 0.20s;
-                }
-
-                .form-group-custom:nth-child(5) {
-                    animation-delay: 0.25s;
-                }
 
             .form-label {
-                font-size: 14px;
-                font-weight: 600;
-                color: #334155;
-                margin-bottom: 8px;
+                margin-bottom: 7px;
+                color: #596579;
+                font-size: 12px;
+                font-weight: 700;
             }
 
-            .form-control,
-            .form-select {
-                min-height: 50px;
-                border-radius: 12px;
-                border: 1px solid #dbe3ef;
-                background-color: #f8fafc;
-                transition: all 0.25s ease;
-            }
-
-            textarea.form-control {
-                min-height: 110px;
-                resize: vertical;
-            }
-
-            .form-control:focus,
-            .form-select:focus {
-                background-color: white;
-                border-color: #4f46e5;
-                box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
-                transform: translateY(-1px);
-            }
-
-            .input-icon-wrapper {
+            .input-wrap {
                 position: relative;
             }
 
             .input-icon {
                 position: absolute;
+                z-index: 2;
+                left: 15px;
                 top: 50%;
-                left: 16px;
                 transform: translateY(-50%);
-                color: #64748b;
-                z-index: 5;
+                color: #98a5b5;
+                font-size: 15px;
                 pointer-events: none;
             }
 
-            .input-icon-wrapper .form-control,
-            .input-icon-wrapper .form-select {
-                padding-left: 45px;
+            .form-control,
+            .form-select {
+                min-height: 48px;
+                padding-left: 43px;
+                border: 1px solid #dfe7ef;
+                border-radius: 12px;
+                background: #f8fafc;
+                color: #172033;
+                font-size: 13px;
+                transition: .25s ease;
+            }
+
+            textarea.form-control {
+                min-height: 90px;
+                padding: 13px 15px;
+                resize: vertical;
+            }
+
+            .form-control::placeholder {
+                color: #abb4c0;
+            }
+
+            .form-control:hover,
+            .form-select:hover {
+                background: white;
+                border-color: #cbd7e2;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                background: white;
+                border-color: #1689e9;
+                box-shadow: 0 0 0 4px rgba(22,137,233,.10);
+            }
+
+
+            /* Password */
+
+            .password-input {
+                padding-right: 46px;
             }
 
             .password-toggle {
                 position: absolute;
-                right: 15px;
+                z-index: 4;
                 top: 50%;
+                right: 14px;
                 transform: translateY(-50%);
-                border: none;
+                border: 0;
                 background: transparent;
-                color: #64748b;
+                color: #8b98a8;
+                font-size: 15px;
                 cursor: pointer;
-                z-index: 6;
             }
 
-                .password-toggle:hover {
-                    color: #4f46e5;
+
+            /* Validation */
+
+            .text-danger {
+                display: block;
+                margin-top: 4px;
+                font-size: 11px;
+            }
+
+            .validation-summary-errors {
+                margin-bottom: 17px;
+                padding: 11px 14px;
+                border: 1px solid #ffd4da;
+                border-radius: 12px;
+                background: #fff3f5;
+                color: #b4233d !important;
+                font-size: 11px;
+            }
+
+                .validation-summary-errors ul {
+                    margin: 0;
+                    padding-left: 16px;
                 }
 
+
+            /* =====================================
+                                   REGISTER BUTTON
+                                ====================================== */
+
             .register-button {
-                min-height: 52px;
-                border: none;
-                border-radius: 14px;
-                font-size: 16px;
-                font-weight: 700;
-                letter-spacing: 0.3px;
-                background: linear-gradient(135deg, #4f46e5, #2563eb);
-                box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
-                transition: all 0.3s ease;
+                min-height: 51px;
+                border: 0;
+                border-radius: 13px;
+                color: white;
                 position: relative;
                 overflow: hidden;
+                background: linear-gradient(110deg, #1689e9, #116fc6);
+                box-shadow: 0 13px 30px rgba(22,137,233,.24);
+                font-size: 14px;
+                font-weight: 800;
+                transition: .3s ease;
             }
 
                 .register-button::before {
                     content: "";
                     position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 70%;
-                    height: 100%;
-                    background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.35), transparent );
-                    transition: 0.5s;
-                }
-
-                .register-button:hover::before {
-                    left: 130%;
+                    width: 90px;
+                    height: 130%;
+                    top: -15%;
+                    left: -100px;
+                    background: rgba(255,255,255,.24);
+                    transform: skewX(-20deg);
+                    transition: .55s;
                 }
 
                 .register-button:hover {
-                    transform: translateY(-3px);
-                    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.35);
+                    color: white;
+                    transform: translateY(-2px);
+                    box-shadow: 0 17px 37px rgba(22,137,233,.33);
                 }
 
-                .register-button:active {
-                    transform: translateY(0);
-                }
-
-            .login-link-box {
-                margin-top: 25px;
-                padding: 15px;
-                text-align: center;
-                border-radius: 12px;
-                background: #f8fafc;
-                color: #64748b;
-            }
-
-                .login-link-box a {
-                    color: #4f46e5;
-                    text-decoration: none;
-                    font-weight: 700;
-                }
-
-                    .login-link-box a:hover {
-                        text-decoration: underline;
+                    .register-button:hover::before {
+                        left: 120%;
                     }
 
-            .validation-summary-errors {
-                padding: 14px 16px;
-                margin-bottom: 20px;
-                border-radius: 12px;
-                background-color: #fff1f2;
-                border-left: 4px solid #e11d48;
+
+            .login-box {
+                margin-top: 20px;
+                text-align: center;
+                color: #8b95a5;
+                font-size: 12px;
             }
 
-            .text-danger {
-                font-size: 13px;
-                margin-top: 5px;
-                display: block;
-            }
+                .login-box a {
+                    margin-left: 3px;
+                    color: #1689e9;
+                    text-decoration: none;
+                    font-weight: 800;
+                }
 
-            .loading-select {
-                opacity: 0.6;
-                pointer-events: none;
-            }
 
-            @@keyframes cardEnter {
+            /* =====================================
+                                   ANIMATIONS
+                                ====================================== */
+
+            @@keyframes shellEnter {
+
                 from {
                     opacity: 0;
-                    transform: translateY(35px) scale(0.98);
+                    transform: translateY(24px) scale(.99);
                 }
 
                 to {
@@ -299,1053 +609,1126 @@
                 }
             }
 
-            @@keyframes fieldEnter {
-                from {
-                    opacity: 0;
-                    transform: translateY(15px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            @@keyframes floatCircle {
-                0%, 100% {
-                    transform: translateY(0);
-                }
-
-                50% {
-                    transform: translateY(18px);
-                }
-            }
-
-            @@media (max-width: 768px) {
-                .register-wrapper {
-                    padding: 25px 8px;
-                }
-
-                .register-body {
-                    padding: 25px 20px;
-                }
-
-                .register-header {
-                    padding: 28px 20px;
-                }
-            }
-
-            /* ================================
-                                                                                           LIVE ANIMATED BACKGROUND
-                                                                                        ================================ */
-
-            html,
-            body {
-                min-height: 100%;
-            }
-
-            /* Main animated background */
-            .animated-background {
-                position: fixed;
-                inset: 0;
-                z-index: -10;
-                overflow: hidden;
-                background: linear-gradient( 125deg, #eef2ff, #e0f2fe, #f5f3ff, #ecfeff );
-                background-size: 400% 400%;
-                animation: backgroundFlow 14s ease infinite;
-            }
-
-                /* Animated grid */
-                .animated-background::before {
-                    content: "";
-                    position: absolute;
-                    inset: 0;
-                    opacity: 0.35;
-                    background-image: linear-gradient( rgba(79, 70, 229, 0.08) 1px, transparent 1px ), linear-gradient( 90deg, rgba(79, 70, 229, 0.08) 1px, transparent 1px );
-                    background-size: 45px 45px;
-                    animation: gridMove 18s linear infinite;
-                }
-
-                /* Soft light layer */
-                .animated-background::after {
-                    content: "";
-                    position: absolute;
-                    width: 700px;
-                    height: 700px;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    border-radius: 50%;
-                    background: radial-gradient( circle, rgba(99, 102, 241, 0.14), transparent 65% );
-                    animation: centerPulse 6s ease-in-out infinite;
-                }
-
-            /* Floating background blobs */
-            .background-blob {
-                position: absolute;
-                border-radius: 50%;
-                filter: blur(10px);
-                opacity: 0.5;
-                will-change: transform;
-            }
-
-            .blob-one {
-                width: 340px;
-                height: 340px;
-                top: -100px;
-                left: -80px;
-                background: linear-gradient( 135deg, rgba(79, 70, 229, 0.8), rgba(99, 102, 241, 0.35) );
-                animation: blobOneMove 12s ease-in-out infinite;
-            }
-
-            .blob-two {
-                width: 420px;
-                height: 420px;
-                right: -130px;
-                bottom: -130px;
-                background: linear-gradient( 135deg, rgba(14, 165, 233, 0.65), rgba(6, 182, 212, 0.3) );
-                animation: blobTwoMove 15s ease-in-out infinite;
-            }
-
-            .blob-three {
-                width: 260px;
-                height: 260px;
-                top: 35%;
-                right: 8%;
-                background: linear-gradient( 135deg, rgba(168, 85, 247, 0.5), rgba(79, 70, 229, 0.25) );
-                animation: blobThreeMove 11s ease-in-out infinite;
-            }
-
-            .blob-four {
-                width: 230px;
-                height: 230px;
-                bottom: 15%;
-                left: 8%;
-                background: linear-gradient( 135deg, rgba(45, 212, 191, 0.45), rgba(14, 165, 233, 0.2) );
-                animation: blobFourMove 13s ease-in-out infinite;
-            }
-
-            /* ================================
-                                                                                           CARD MODERNIZATION
-                                                                                        ================================ */
-
-            .register-wrapper {
-                position: relative;
-                z-index: 2;
-            }
-
-            .register-card {
-                position: relative;
-                border: 1px solid rgba(255, 255, 255, 0.75);
-                background: linear-gradient( 145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.82) );
-                backdrop-filter: blur(22px);
-                -webkit-backdrop-filter: blur(22px);
-                box-shadow: 0 25px 70px rgba(30, 41, 59, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.55) inset;
-                transition: transform 0.35s ease, box-shadow 0.35s ease;
-                animation: cardEnter 0.8s ease, cardGlow 5s ease-in-out infinite;
-            }
-
-                .register-card:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 35px 90px rgba(30, 41, 59, 0.23), 0 0 35px rgba(79, 70, 229, 0.12);
-                }
-
-                /* Animated border light */
-                .register-card::before {
-                    content: "";
-                    position: absolute;
-                    inset: -2px;
-                    z-index: -1;
-                    border-radius: 26px;
-                    background: linear-gradient( 120deg, transparent 20%, rgba(99, 102, 241, 0.55), rgba(14, 165, 233, 0.5), transparent 80% );
-                    background-size: 250% 250%;
-                    opacity: 0.35;
-                    filter: blur(8px);
-                    animation: borderGlowMove 7s linear infinite;
-                }
-
-            /* ================================
-                                                                                           HEADER ANIMATION
-                                                                                        ================================ */
-
-            .register-header {
-                background: linear-gradient( 120deg, #4f46e5, #2563eb, #0ea5e9, #6366f1 );
-                background-size: 300% 300%;
-                animation: headerGradient 9s ease infinite;
-            }
-
-                .register-header::before {
-                    animation: floatCircle 6s ease-in-out infinite, headerBubblePulse 4s ease-in-out infinite;
-                }
-
-                .register-header::after {
-                    animation: floatCircle 5s ease-in-out infinite reverse, headerBubblePulse 5s ease-in-out infinite;
-                }
-
-            /* ================================
-                                                                                           LIVE PULSE ICON
-                                                                                        ================================ */
-
-            .register-icon {
-                position: relative;
-                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45), 0 10px 30px rgba(15, 23, 42, 0.2);
-                animation: iconFloat 3.5s ease-in-out infinite, iconPulse 2.2s ease-out infinite;
-            }
-
-                /* Outer pulse ring */
-                .register-icon::before,
-                .register-icon::after {
-                    content: "";
-                    position: absolute;
-                    inset: -8px;
-                    border-radius: 50%;
-                    border: 2px solid rgba(255, 255, 255, 0.5);
-                    opacity: 0;
-                    pointer-events: none;
-                }
-
-                .register-icon::before {
-                    animation: pulseRing 2.4s ease-out infinite;
-                }
-
-                .register-icon::after {
-                    animation: pulseRing 2.4s ease-out 1.2s infinite;
-                }
-
-                .register-icon i {
-                    animation: iconScale 2.4s ease-in-out infinite;
-                }
-
-            /* ================================
-                                                                                           SECTION TITLES
-                                                                                        ================================ */
-
-            .section-title {
-                position: relative;
-                padding: 8px 0;
-            }
-
-                .section-title i {
-                    width: 34px;
-                    height: 34px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 10px;
-                    color: #4f46e5;
-                    background: linear-gradient( 135deg, rgba(79, 70, 229, 0.14), rgba(14, 165, 233, 0.12) );
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                }
-
-                .section-title:hover i {
-                    transform: translateY(-2px) rotate(-4deg);
-                    box-shadow: 0 8px 18px rgba(79, 70, 229, 0.2);
-                }
-
-            /* ================================
-                                                                                           FORM INPUT MODERNIZATION
-                                                                                        ================================ */
-
-            .form-control,
-            .form-select {
-                border: 1px solid rgba(148, 163, 184, 0.35);
-                background: rgba(248, 250, 252, 0.78);
-                box-shadow: 0 4px 12px rgba(15, 23, 42, 0.025), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
-                transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-            }
-
-                .form-control:hover,
-                .form-select:hover {
-                    border-color: rgba(99, 102, 241, 0.45);
-                    background: rgba(255, 255, 255, 0.95);
-                }
-
-                .form-control:focus,
-                .form-select:focus {
-                    transform: translateY(-2px);
-                    border-color: #6366f1;
-                    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12), 0 10px 25px rgba(79, 70, 229, 0.1);
-                    background: #ffffff;
-                }
-
-            .input-icon {
-                transition: color 0.25s ease, transform 0.25s ease;
-            }
-
-            .input-icon-wrapper:focus-within .input-icon {
-                color: #4f46e5;
-                transform: translateY(-50%) scale(1.12);
-            }
-
-            /* Small glow around active field */
-            .input-icon-wrapper::after {
-                content: "";
-                position: absolute;
-                inset: 0;
-                border-radius: 12px;
-                pointer-events: none;
-                opacity: 0;
-                box-shadow: 0 0 20px rgba(99, 102, 241, 0.18);
-                transition: opacity 0.25s ease;
-            }
-
-            .input-icon-wrapper:focus-within::after {
-                opacity: 1;
-            }
-
-            /* ================================
-                                                                                           BUTTON LIVE EFFECT
-                                                                                        ================================ */
-
-            .register-button {
-                background: linear-gradient( 120deg, #4f46e5, #2563eb, #0ea5e9, #4f46e5 );
-                background-size: 300% 300%;
-                animation: buttonGradient 5s ease infinite, buttonSoftPulse 2.8s ease-in-out infinite;
-            }
-
-                .register-button::after {
-                    content: "";
-                    position: absolute;
-                    inset: 0;
-                    background: radial-gradient( circle at center, rgba(255, 255, 255, 0.22), transparent 65% );
-                    opacity: 0;
-                    transition: opacity 0.3s ease;
-                }
-
-                .register-button:hover::after {
-                    opacity: 1;
-                }
-
-                .register-button:hover {
-                    transform: translateY(-4px) scale(1.01);
-                    box-shadow: 0 18px 40px rgba(37, 99, 235, 0.4);
-                }
-
-                .register-button:active {
-                    transform: translateY(-1px) scale(0.99);
-                }
-
-            /* ================================
-                                                                                           LOGIN BOX
-                                                                                        ================================ */
-
-            .login-link-box {
-                border: 1px solid rgba(148, 163, 184, 0.18);
-                background: linear-gradient( 135deg, rgba(248, 250, 252, 0.9), rgba(238, 242, 255, 0.8) );
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-
-                .login-link-box:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1);
-                }
-
-                .login-link-box a {
-                    position: relative;
-                }
-
-                    .login-link-box a::after {
-                        content: "";
-                        position: absolute;
-                        left: 0;
-                        bottom: -3px;
-                        width: 0;
-                        height: 2px;
-                        border-radius: 10px;
-                        background: linear-gradient( 90deg, #4f46e5, #0ea5e9 );
-                        transition: width 0.3s ease;
-                    }
-
-                    .login-link-box a:hover {
-                        text-decoration: none;
-                    }
-
-                        .login-link-box a:hover::after {
-                            width: 100%;
-                        }
-
-            /* ================================
-                                                                                           ANIMATIONS
-                                                                                        ================================ */
-
-            @@keyframes backgroundFlow {
-                0% {
-                    background-position: 0% 50%;
-                }
-
-                50% {
-                    background-position: 100% 50%;
-                }
-
-                100% {
-                    background-position: 0% 50%;
-                }
-            }
 
             @@keyframes gridMove {
+
                 from {
-                    background-position: 0 0;
+                    transform: translate(0,0);
                 }
 
                 to {
-                    background-position: 90px 90px;
+                    transform: translate(50px,50px);
                 }
             }
 
-            @@keyframes centerPulse {
-                0%,
-                100% {
-                    transform: translate(-50%, -50%) scale(0.9);
-                    opacity: 0.6;
+
+            @@keyframes ambientMove {
+
+                0%, 100% {
+                    transform: translate(0,0);
                 }
 
                 50% {
-                    transform: translate(-50%, -50%) scale(1.15);
-                    opacity: 1;
+                    transform: translate(35px,25px);
                 }
             }
 
-            @@keyframes blobOneMove {
-                0%,
-                100% {
-                    transform: translate(0, 0) scale(1);
-                }
 
-                50% {
-                    transform: translate(120px, 70px) scale(1.12);
-                }
-            }
+            @@keyframes sportsPulse {
 
-            @@keyframes blobTwoMove {
-                0%,
-                100% {
-                    transform: translate(0, 0) scale(1);
-                }
-
-                50% {
-                    transform: translate(-130px, -80px) scale(1.1);
-                }
-            }
-
-            @@keyframes blobThreeMove {
-                0%,
-                100% {
-                    transform: translate(0, 0);
-                }
-
-                50% {
-                    transform: translate(-60px, 100px);
-                }
-            }
-
-            @@keyframes blobFourMove {
-                0%,
-                100% {
-                    transform: translate(0, 0);
-                }
-
-                50% {
-                    transform: translate(90px, -70px);
-                }
-            }
-
-            @@keyframes headerGradient {
                 0% {
-                    background-position: 0% 50%;
+                    opacity: .55;
+                    transform: scale(.6);
                 }
 
-                50% {
-                    background-position: 100% 50%;
-                }
-
-                100% {
-                    background-position: 0% 50%;
+                80%, 100% {
+                    opacity: 0;
+                    transform: scale(1.65);
                 }
             }
 
-            @@keyframes iconFloat {
-                0%,
-                100% {
-                    transform: translateY(0);
+
+            @@keyframes floatingSport {
+
+                0%, 100% {
+                    transform: translateY(0) rotate(0);
                 }
 
                 50% {
-                    transform: translateY(-7px);
+                    transform: translateY(-13px) rotate(5deg);
                 }
             }
 
-            @@keyframes iconPulse {
+
+            @@keyframes redPulse {
+
                 0% {
-                    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.45), 0 10px 30px rgba(15, 23, 42, 0.2);
+                    box-shadow: 0 0 0 0 rgba(255,67,92,.60);
                 }
 
                 70% {
-                    box-shadow: 0 0 0 16px rgba(255, 255, 255, 0), 0 10px 30px rgba(15, 23, 42, 0.2);
+                    box-shadow: 0 0 0 9px rgba(255,67,92,0);
                 }
 
                 100% {
-                    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0), 0 10px 30px rgba(15, 23, 42, 0.2);
+                    box-shadow: 0 0 0 0 rgba(255,67,92,0);
                 }
             }
 
-            @@keyframes pulseRing {
+
+            @@keyframes greenPulse {
+
                 0% {
-                    transform: scale(0.75);
-                    opacity: 0.8;
+                    box-shadow: 0 0 0 0 rgba(39,220,136,.55);
+                }
+
+                70% {
+                    box-shadow: 0 0 0 8px rgba(39,220,136,0);
                 }
 
                 100% {
-                    transform: scale(1.6);
-                    opacity: 0;
+                    box-shadow: 0 0 0 0 rgba(39,220,136,0);
                 }
             }
 
-            @@keyframes iconScale {
-                0%,
-                100% {
-                    transform: scale(1);
+
+            /* =====================================
+                                   RESPONSIVE
+                                ====================================== */
+
+            @@media (max-width: 1100px) {
+
+                .register-shell {
+                    grid-template-columns: 340px 1fr;
                 }
 
-                50% {
-                    transform: scale(1.08);
-                }
-            }
-
-            @@keyframes cardGlow {
-                0%,
-                100% {
-                    box-shadow: 0 25px 70px rgba(30, 41, 59, 0.18), 0 0 0 rgba(79, 70, 229, 0);
-                }
-
-                50% {
-                    box-shadow: 0 28px 80px rgba(30, 41, 59, 0.21), 0 0 30px rgba(79, 70, 229, 0.12);
+                .form-panel {
+                    padding: 40px 35px;
                 }
             }
 
-            @@keyframes borderGlowMove {
-                0% {
-                    background-position: 0% 50%;
+
+            @@media (max-width: 900px) {
+
+                .register-shell {
+                    grid-template-columns: 1fr;
+                    max-width: 720px;
                 }
 
-                100% {
-                    background-position: 250% 50%;
-                }
-            }
-
-            @@keyframes headerBubblePulse {
-                0%,
-                100% {
-                    opacity: 0.12;
+                .sports-panel {
+                    min-height: 360px;
                 }
 
-                50% {
-                    opacity: 0.23;
-                }
-            }
-
-            @@keyframes buttonGradient {
-                0% {
-                    background-position: 0% 50%;
+                .sports-content {
+                    bottom: 25px;
                 }
 
-                50% {
-                    background-position: 100% 50%;
+                .event-row {
+                    display: none;
                 }
 
-                100% {
-                    background-position: 0% 50%;
+                .floating-sport,
+                .pulse-ring {
+                    display: none;
                 }
             }
 
-            @@keyframes buttonSoftPulse {
-                0%,
-                100% {
-                    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+
+            @@media (max-width: 576px) {
+
+                .register-page {
+                    padding: 12px;
                 }
 
-                50% {
-                    box-shadow: 0 15px 38px rgba(37, 99, 235, 0.42);
+                .register-shell {
+                    border-radius: 22px;
                 }
-            }
 
-            /* Accessibility */
-            @@media (prefers-reduced-motion: reduce) {
-                *,
-                *::before,
-                *::after {
-                    animation-duration: 0.01ms !important;
-                    animation-iteration-count: 1 !important;
-                    scroll-behavior: auto !important;
+                .sports-panel {
+                    min-height: 290px;
+                    padding: 25px;
+                }
+
+                .sports-brand {
+                    font-size: 13px;
+                }
+
+                .sports-content {
+                    left: 25px;
+                    right: 25px;
+                }
+
+                    .sports-content h2 {
+                        font-size: 28px;
+                    }
+
+                    .sports-content p {
+                        display: none;
+                    }
+
+                .sports-live {
+                    right: 22px;
+                    top: 24px;
+                }
+
+                .form-panel {
+                    padding: 30px 22px;
+                }
+
+                .form-heading h1 {
+                    font-size: 31px;
                 }
             }
     </style>
+
 </head>
 
-<div class="animated-background" aria-hidden="true">
-    <div class="background-blob blob-one"></div>
-    <div class="background-blob blob-two"></div>
-    <div class="background-blob blob-three"></div>
-    <div class="background-blob blob-four"></div>
-</div>
 
-<div class="container register-wrapper">
-    <div class="row justify-content-center">
-        <div class="col-lg-12 col-md-12">
+<body>
 
-            <div class="register-card">
 
-                <div class="register-header">
-                    <div class="register-icon">
-                        <i class="bi bi-person-plus-fill"></i>
+    <!-- BACKGROUND -->
+
+    <div class="page-background">
+
+        <div class="ambient-ball ambient-one"></div>
+
+        <div class="ambient-ball ambient-two"></div>
+
+    </div>
+
+
+
+    <main class="register-page">
+
+
+        <div class="register-shell">
+
+
+            <!-- ==================================
+                 SPORTS SIDE
+            =================================== -->
+
+            <aside class="sports-panel">
+
+
+                <div class="sports-brand">
+
+                    <div class="brand-icon">
+
+                        <i class="bi bi-calendar2-check-fill"></i>
+
                     </div>
 
-                    <h2>Create Your Account</h2>
+                    <span class="brand-text">
+                        SchedulePlay
+                    </span>
 
-                    <p>
-                        Join Schedule Management as a user or coach
-                    </p>
                 </div>
 
-                <div class="register-body">
 
-                    <form asp-controller="Account"
-                          asp-action="Register"
-                          method="post"
-                          id="registerForm">
+                <div class="sports-live">
 
-                        <div asp-validation-summary="ModelOnly"
-                             class="text-danger">
+                    <span class="live-dot"></span>
+
+                    SPORTS LIVE
+
+                </div>
+
+
+                <div class="pulse-ring"></div>
+
+                <div class="pulse-ring pulse-ring-two"></div>
+
+
+                <div class="floating-sport floating-football">
+                    ⚽
+                </div>
+
+
+                <div class="floating-sport floating-cricket">
+                    🏏
+                </div>
+
+
+                <div class="floating-sport floating-basketball">
+                    🏀
+                </div>
+
+
+                <div class="sports-content">
+
+                    <h2>
+                        Your next game starts here.
+                    </h2>
+
+                    <p>
+                        Create your account and connect with coaches,
+                        activities and available sports schedules.
+                    </p>
+
+
+                    <div class="event-row">
+
+                        <div class="event-sport-icon">
+                            🏏
                         </div>
 
-                        <div class="section-title">
-                            <i class="bi bi-person-vcard"></i>
-                            Personal Information
-                        </div>
+                        <div class="event-details">
 
-                        <div class="row">
+                            <strong>
+                                Cricket Practice
+                            </strong>
 
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-                                    <label asp-for="FullName"
-                                           class="form-label">
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-                                        <i class="bi bi-person input-icon"></i>
-
-                                        <input asp-for="FullName"
-                                               class="form-control"
-                                               placeholder="Enter full name" />
-                                    </div>
-
-                                    <span asp-validation-for="FullName"
-                                          class="text-danger">
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-                                    <label asp-for="Email"
-                                           class="form-label">
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-                                        <i class="bi bi-envelope input-icon"></i>
-
-                                        <input asp-for="Email"
-                                               class="form-control"
-                                               placeholder="Enter email address" />
-                                    </div>
-
-                                    <span asp-validation-for="Email"
-                                          class="text-danger">
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-                                    <label asp-for="PhoneNumber"
-                                           class="form-label">
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-                                        <i class="bi bi-telephone input-icon"></i>
-
-                                        <input asp-for="PhoneNumber"
-                                               class="form-control"
-                                               placeholder="Enter phone number" />
-                                    </div>
-
-                                    <span asp-validation-for="PhoneNumber"
-                                          class="text-danger">
-                                    </span>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="section-title">
-                            <i class="bi bi-shield-lock"></i>
-                            Account Security
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-                                    <label asp-for="RegisterAs"
-                                           class="form-label">
-                                        Register As
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-                                        <i class="bi bi-people input-icon"></i>
-
-                                        <select asp-for="RegisterAs"
-                                                class="form-select">
-
-                                            <option value="">
-                                                Select Role
-                                            </option>
-
-                                            <option value="User">
-                                                User
-                                            </option>
-
-                                            <option value="Coach">
-                                                Coach
-                                            </option>
-
-                                        </select>
-                                    </div>
-
-                                    <span asp-validation-for="RegisterAs"
-                                          class="text-danger">
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-
-                                    <label asp-for="Password"
-                                           class="form-label">
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-
-                                        <i class="bi bi-lock input-icon"></i>
-
-                                        <input asp-for="Password"
-                                               type="password"
-                                               class="form-control"
-                                               id="Password"
-                                               placeholder="Enter password" />
-
-                                        <button type="button"
-                                                class="password-toggle"
-                                                onclick="togglePassword('Password', this)">
-
-                                            <i class="bi bi-eye"></i>
-
-                                        </button>
-
-                                    </div>
-
-                                    <span asp-validation-for="Password"
-                                          class="text-danger">
-                                    </span>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-
-                                    <label asp-for="ConfirmPassword"
-                                           class="form-label">
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-
-                                        <i class="bi bi-lock-fill input-icon"></i>
-
-                                        <input asp-for="ConfirmPassword"
-                                               type="password"
-                                               class="form-control"
-                                               id="ConfirmPassword"
-                                               placeholder="Confirm password" />
-
-                                        <button type="button"
-                                                class="password-toggle"
-                                                onclick="togglePassword('ConfirmPassword', this)">
-
-                                            <i class="bi bi-eye"></i>
-
-                                        </button>
-
-                                    </div>
-
-                                    <span asp-validation-for="ConfirmPassword"
-                                          class="text-danger">
-                                    </span>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="section-title">
-                            <i class="bi bi-geo-alt"></i>
-                            Location Details
-                        </div>
-
-                        <div class="row">
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-
-                                    <label class="form-label">
-                                        Country
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-
-                                        <i class="bi bi-globe input-icon"></i>
-
-                                        <select id="CountryId"
-                                                class="form-select">
-
-                                            <option value="">
-                                                Select Country
-                                            </option>
-
-                                            @if (ViewBag.Countries != null)
-                                            {
-                                                foreach (var country in ViewBag.Countries)
-                                                {
-                                                    <option value="@country.CountryId">
-                                                        @country.CountryName
-                                                    </option>
-                                                }
-                                            }
-
-                                        </select>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-
-                                    <label class="form-label">
-                                        State
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-
-                                        <i class="bi bi-map input-icon"></i>
-
-                                        <select id="StateId"
-                                                class="form-select">
-
-                                            <option value="">
-                                                Select State
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group-custom">
-
-                                    <label asp-for="DistrictId"
-                                           class="form-label">
-                                        District
-                                    </label>
-
-                                    <div class="input-icon-wrapper">
-
-                                        <i class="bi bi-pin-map input-icon"></i>
-
-                                        <select asp-for="DistrictId"
-                                                id="DistrictId"
-                                                class="form-select">
-
-                                            <option value="">
-                                                Select District
-                                            </option>
-
-                                        </select>
-
-                                    </div>
-
-                                    <span asp-validation-for="DistrictId"
-                                          class="text-danger">
-                                    </span>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="form-group-custom">
-
-                            <label asp-for="FullAddress"
-                                   class="form-label">
-                                Full Address
-                            </label>
-
-                            <textarea asp-for="FullAddress"
-                                      class="form-control"
-                                      rows="4"
-                                      placeholder="Enter complete address"></textarea>
-
-                            <span asp-validation-for="FullAddress"
-                                  class="text-danger">
+                            <span>
+                                Tomorrow • 05:30 PM
                             </span>
 
                         </div>
 
-                        <div class="d-grid mt-4">
 
-                            <button type="submit"
-                                    class="btn btn-primary register-button"
-                                    id="registerButton">
+                        <div class="availability">
 
-                                <span id="buttonText">
-                                    <i class="bi bi-person-check me-2"></i>
-                                    Create Account
-                                </span>
+                            <span></span>
 
-                                <span id="buttonLoader"
-                                      class="d-none">
-
-                                    <span class="spinner-border spinner-border-sm me-2">
-                                    </span>
-
-                                    Creating Account...
-
-                                </span>
-
-                            </button>
+                            OPEN
 
                         </div>
 
-                    </form>
+                    </div>
 
-                    <div class="login-link-box">
-                        Already registered?
 
-                        <a asp-controller="Account"
-                           asp-action="Login">
-                            Login to your account
-                        </a>
+                    <div class="event-row">
+
+                        <div class="event-sport-icon">
+                            🏀
+                        </div>
+
+                        <div class="event-details">
+
+                            <strong>
+                                Basketball Session
+                            </strong>
+
+                            <span>
+                                Saturday • 07:00 AM
+                            </span>
+
+                        </div>
+
+
+                        <div class="availability">
+
+                            <span></span>
+
+                            OPEN
+
+                        </div>
+
                     </div>
 
                 </div>
-            </div>
+
+            </aside>
+
+
+
+            <!-- ==================================
+                 REGISTER FORM
+            =================================== -->
+
+            <section class="form-panel">
+
+
+                <div class="form-heading">
+
+                    <div class="mini-title">
+
+                        <span></span>
+
+                        Join the community
+
+                    </div>
+
+                    <h1>
+                        Create account<span>.</span>
+                    </h1>
+
+                    <p>
+                        Register as a User or Coach and start scheduling.
+                    </p>
+
+                </div>
+
+
+
+                <form asp-controller="Account"
+                      asp-action="Register"
+                      method="post"
+                      id="registerForm">
+
+                    @Html.AntiForgeryToken()
+
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger">
+                    </div>
+
+
+
+                    <!-- ===================================
+                         PERSONAL INFORMATION
+                    ==================================== -->
+
+                    <div class="section-title">
+
+                        <i class="bi bi-person-vcard"></i>
+
+                        Personal Information
+
+                    </div>
+
+
+                    <div class="row">
+
+
+                        <!-- FULL NAME -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="FullName"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-person input-icon"></i>
+
+                                    <input asp-for="FullName"
+                                           class="form-control"
+                                           placeholder="Enter full name" />
+
+                                </div>
+
+                                <span asp-validation-for="FullName"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- EMAIL -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="Email"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-envelope input-icon"></i>
+
+                                    <input asp-for="Email"
+                                           class="form-control"
+                                           placeholder="Email address" />
+
+                                </div>
+
+                                <span asp-validation-for="Email"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- PHONE -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="PhoneNumber"
+                                       class="form-label">
+                                </label>
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-telephone input-icon"></i>
+
+                                    <input asp-for="PhoneNumber"
+                                           class="form-control"
+                                           placeholder="Phone number" />
+
+                                </div>
+
+                                <span asp-validation-for="PhoneNumber"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ===================================
+                         ACCOUNT SECURITY
+                    ==================================== -->
+
+                    <div class="section-title">
+
+                        <i class="bi bi-shield-lock"></i>
+
+                        Account Security
+
+                    </div>
+
+
+                    <div class="row">
+
+
+                        <!-- ROLE -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="RegisterAs"
+                                       class="form-label">
+
+                                    Register As
+
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-people input-icon"></i>
+
+
+                                    <select asp-for="RegisterAs"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select Role
+                                        </option>
+
+                                        <option value="User">
+                                            User
+                                        </option>
+
+                                        <option value="Coach">
+                                            Coach
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <span asp-validation-for="RegisterAs"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="Password"
+                                       class="form-label">
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-lock input-icon"></i>
+
+
+                                    <input asp-for="Password"
+                                           type="password"
+                                           id="Password"
+                                           class="form-control password-input"
+                                           placeholder="Password" />
+
+
+                                    <button type="button"
+                                            class="password-toggle"
+                                            onclick="togglePassword('Password', this)">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </button>
+
+                                </div>
+
+
+                                <span asp-validation-for="Password"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- CONFIRM PASSWORD -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="ConfirmPassword"
+                                       class="form-label">
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-lock-fill input-icon"></i>
+
+
+                                    <input asp-for="ConfirmPassword"
+                                           type="password"
+                                           id="ConfirmPassword"
+                                           class="form-control password-input"
+                                           placeholder="Confirm password" />
+
+
+                                    <button type="button"
+                                            class="password-toggle"
+                                            onclick="togglePassword('ConfirmPassword', this)">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </button>
+
+                                </div>
+
+
+                                <span asp-validation-for="ConfirmPassword"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ===================================
+                         LOCATION
+                    ==================================== -->
+
+                    <div class="section-title">
+
+                        <i class="bi bi-geo-alt"></i>
+
+                        Location Details
+
+                    </div>
+
+
+                    <div class="row">
+
+
+                        <!-- COUNTRY -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label class="form-label">
+                                    Country
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-globe input-icon"></i>
+
+
+                                    <select id="CountryId"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select Country
+                                        </option>
+
+
+                                        @if (ViewBag.Countries != null)
+                                        {
+                                            foreach (var country in ViewBag.Countries)
+                                            {
+                                                <option value="@country.CountryId">
+
+                                                    @country.CountryName
+
+                                                </option>
+                                            }
+                                        }
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- STATE -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label class="form-label">
+                                    State
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-map input-icon"></i>
+
+
+                                    <select id="StateId"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select State
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DISTRICT -->
+
+                        <div class="col-lg-4 col-md-6">
+
+                            <div class="form-group-custom">
+
+                                <label asp-for="DistrictId"
+                                       class="form-label">
+
+                                    District
+
+                                </label>
+
+
+                                <div class="input-wrap">
+
+                                    <i class="bi bi-pin-map input-icon"></i>
+
+
+                                    <select asp-for="DistrictId"
+                                            id="DistrictId"
+                                            class="form-select">
+
+                                        <option value="">
+                                            Select District
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <span asp-validation-for="DistrictId"
+                                      class="text-danger">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ADDRESS -->
+
+                    <div class="form-group-custom">
+
+                        <label asp-for="FullAddress"
+                               class="form-label">
+
+                            Full Address
+
+                        </label>
+
+
+                        <textarea asp-for="FullAddress"
+                                  class="form-control"
+                                  rows="3"
+                                  placeholder="Enter complete address"></textarea>
+
+
+                        <span asp-validation-for="FullAddress"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- REGISTER BUTTON -->
+
+                    <div class="d-grid mt-3">
+
+
+                        <button type="submit"
+                                class="btn register-button"
+                                id="registerButton">
+
+
+                            <span id="buttonText">
+
+                                Create My Account
+
+                                <i class="bi bi-arrow-right ms-2"></i>
+
+                            </span>
+
+
+                            <span id="buttonLoader"
+                                  class="d-none">
+
+                                <span class="spinner-border spinner-border-sm me-2">
+                                </span>
+
+                                Creating Account...
+
+                            </span>
+
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+
+                <div class="login-box">
+
+                    Already have an account?
+
+                    <a asp-controller="Account"
+                       asp-action="Login">
+
+                        Login here
+
+                    </a>
+
+                </div>
+
+
+            </section>
+
 
         </div>
-    </div>
-</div>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<partial name="_ValidationScriptsPartial" />
 
-<script>
-    $(document).ready(function() {
+    </main>
 
-        // Country change hone par states load honge
-        $("#CountryId").on("change", function() {
 
-            const countryId = $(this).val();
 
-            $("#StateId").empty().append(
-                '<option value="">Select State</option>'
-            );
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-            $("#DistrictId").empty().append(
-                '<option value="">Select District</option>'
-            );
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
-            if (!countryId) {
-                return;
+    <partial name="_ValidationScriptsPartial" />
+
+
+
+    <script>
+
+
+            // ===========================================
+            // PASSWORD SHOW / HIDE
+            // ===========================================
+
+            function togglePassword(inputId, button) {
+
+                const input =
+                    document.getElementById(inputId);
+
+                const icon =
+                    button.querySelector("i");
+
+
+                if (input.type === "password") {
+
+                    input.type = "text";
+
+                    icon.classList.remove("bi-eye");
+
+                    icon.classList.add("bi-eye-slash");
+
+                }
+                else {
+
+                    input.type = "password";
+
+                    icon.classList.remove("bi-eye-slash");
+
+                    icon.classList.add("bi-eye");
+
+                }
+
             }
 
-            $.ajax({
-                url: '@Url.Action("GetStates", "Location")',
-                type: "GET",
-                data: {
-                    countryId: countryId
-                },
-                success: function(states) {
 
-                    console.log("States received:", states);
 
-                    $.each(states, function(index, state) {
-                        $("#StateId").append(
-                            $("<option></option>")
-                                .val(state.stateId)
-                                .text(state.stateName)
+            $(document).ready(function() {
+
+
+                // ===========================================
+                // COUNTRY -> STATE
+                // YOUR EXISTING BINDING LOGIC
+                // ===========================================
+
+                $("#CountryId").on("change", function() {
+
+
+                    const countryId =
+                        $(this).val();
+
+
+                    $("#StateId")
+                        .empty()
+                        .append(
+                            '<option value="">Select State</option>'
                         );
-                    });
-                },
-                error: function(xhr) {
-                    console.log("State error:", xhr.responseText);
-                    alert("Unable to load states.");
-                }
-            });
-        });
 
 
-        // State change hone par districts load honge
-        $("#StateId").on("change", function() {
-
-            const stateId = $(this).val();
-
-            $("#DistrictId").empty().append(
-                '<option value="">Select District</option>'
-            );
-
-            if (!stateId) {
-                return;
-            }
-
-            $.ajax({
-                url: '@Url.Action("GetDistricts", "Location")',
-                type: "GET",
-                data: {
-                    stateId: stateId
-                },
-                success: function(districts) {
-
-                    console.log("Districts received:", districts);
-
-                    $.each(districts, function(index, district) {
-                        $("#DistrictId").append(
-                            $("<option></option>")
-                                .val(district.districtId)
-                                .text(district.districtName)
+                    $("#DistrictId")
+                        .empty()
+                        .append(
+                            '<option value="">Select District</option>'
                         );
-                    });
-                },
-                error: function(xhr) {
-                    console.log("District error:", xhr.responseText);
-                    alert("Unable to load districts.");
-                }
-            });
-        });
 
-    });
-</script>
+
+                    if (!countryId) {
+
+                        return;
+
+                    }
+
+
+                    $.ajax({
+
+                        url: '@Url.Action("GetStates", "Location")',
+
+                        type: "GET",
+
+                        data: {
+
+                            countryId: countryId
+
+                        },
+
+                        success: function(states) {
+
+
+                            $.each(
+                                states,
+                                function(index, state) {
+
+
+                                    $("#StateId")
+                                        .append(
+
+                                            $("<option></option>")
+                                                .val(state.stateId)
+                                                .text(state.stateName)
+
+                                        );
+
+                                }
+                            );
+
+                        },
+
+                        error: function(xhr) {
+
+                            console.log(
+                                "State error:",
+                                xhr.responseText
+                            );
+
+                            alert(
+                                "Unable to load states."
+                            );
+
+                        }
+
+                    });
+
+                });
+
+
+
+                // ===========================================
+                // STATE -> DISTRICT
+                // YOUR EXISTING BINDING LOGIC
+                // ===========================================
+
+                $("#StateId").on("change", function() {
+
+
+                    const stateId =
+                        $(this).val();
+
+
+                    $("#DistrictId")
+                        .empty()
+                        .append(
+                            '<option value="">Select District</option>'
+                        );
+
+
+                    if (!stateId) {
+
+                        return;
+
+                    }
+
+
+                    $.ajax({
+
+                        url: '@Url.Action("GetDistricts", "Location")',
+
+                        type: "GET",
+
+                        data: {
+
+                            stateId: stateId
+
+                        },
+
+                        success: function(districts) {
+
+
+                            $.each(
+                                districts,
+                                function(index, district) {
+
+
+                                    $("#DistrictId")
+                                        .append(
+
+                                            $("<option></option>")
+                                                .val(district.districtId)
+                                                .text(district.districtName)
+
+                                        );
+
+                                }
+                            );
+
+                        },
+
+                        error: function(xhr) {
+
+                            console.log(
+                                "District error:",
+                                xhr.responseText
+                            );
+
+                            alert(
+                                "Unable to load districts."
+                            );
+
+                        }
+
+                    });
+
+                });
+
+
+
+                // ===========================================
+                // BUTTON LOADING ANIMATION
+                // ONLY UI
+                // ===========================================
+
+                $("#registerForm").on(
+                    "submit",
+                    function() {
+
+
+                        setTimeout(function() {
+
+
+                            const validationErrors =
+                                document.querySelectorAll(
+                                    ".field-validation-error, .validation-summary-errors"
+                                );
+
+
+                            if (validationErrors.length === 0) {
+
+
+                                $("#registerButton")
+                                    .prop("disabled", true);
+
+
+                                $("#buttonText")
+                                    .addClass("d-none");
+
+
+                                $("#buttonLoader")
+                                    .removeClass("d-none");
+
+                            }
+
+
+                        }, 0);
+
+                    }
+                );
+
+
+            });
+
+
+    </script>
+
+
+</body>
+
+</html>
