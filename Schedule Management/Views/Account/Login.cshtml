@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 ﻿@model Schedule_Management.ViewModels.LoginViewModel
 
+=======
+@model Schedule_Management.ViewModels.LoginViewModel
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 @{
     ViewData["Title"] = "Login";
     Layout = null;
 }
+<<<<<<< HEAD
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,19 +26,43 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Schedule Management</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+            :root {
+                --auth-primary: #1997f0;
+                --auth-primary-dark: #0e7fd0;
+                --auth-text: #111827;
+                --auth-muted: #8b95a7;
+                --auth-line: #e6ebf2;
+                --auth-field: #f6f8fb;
+            }
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 
             * {
                 box-sizing: border-box;
             }
 
+<<<<<<< HEAD
             html,
             body {
                 margin: 0;
+=======
+            html, body {
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 min-height: 100%;
                 font-family: Inter, "Segoe UI", sans-serif;
             }
 
             body {
+<<<<<<< HEAD
                 min-height: 100vh;
                 background: #eef4f8;
                 color: #172033;
@@ -263,12 +292,118 @@
                 font-size: 13px;
                 font-weight: 700;
                 color: #49566a;
+=======
+                margin: 0;
+                min-height: 100vh;
+                font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+                color: var(--auth-text);
+                background: #edf2f6;
+            }
+
+            .auth-page {
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                padding: 34px;
+            }
+
+            .auth-shell {
+                width: min(1120px, 100%);
+                min-height: 670px;
+                display: grid;
+                grid-template-columns: 52% 48%;
+                overflow: hidden;
+                border-radius: 24px;
+                background: #fff;
+                box-shadow: 0 24px 65px rgba(35, 54, 75, .13);
+            }
+
+            .auth-form-panel {
+                padding: 42px 68px 48px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .brand {
+                display: inline-flex;
+                align-items: center;
+                gap: 12px;
+                width: fit-content;
+                text-decoration: none;
+                color: #111827;
+                font-weight: 800;
+                letter-spacing: -.2px;
+            }
+
+            .brand-mark {
+                width: 31px;
+                height: 31px;
+                border-radius: 50%;
+                background: linear-gradient(145deg, #52b7ff, #167ee8);
+                box-shadow: inset 0 -5px 10px rgba(0,0,0,.08), 0 8px 18px rgba(25,151,240,.22);
+            }
+
+            .form-area {
+                width: 100%;
+                max-width: 430px;
+                margin: auto 0;
+            }
+
+            .eyebrow {
+                margin-bottom: 8px;
+                color: #94a0b2;
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: .12em;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: clamp(34px, 4vw, 50px);
+                line-height: 1.05;
+                font-weight: 800;
+                letter-spacing: -1.8px;
+            }
+
+            .dot {
+                color: var(--auth-primary);
+            }
+
+            .subtext {
+                margin: 14px 0 32px;
+                color: var(--auth-muted);
+                font-size: 14px;
+            }
+
+                .subtext a, .register-copy a {
+                    color: var(--auth-primary);
+                    text-decoration: none;
+                    font-weight: 700;
+                }
+
+                    .subtext a:hover, .register-copy a:hover {
+                        text-decoration: underline;
+                    }
+
+            .field {
+                margin-bottom: 16px;
+            }
+
+            .field-label {
+                display: block;
+                margin: 0 0 7px 3px;
+                font-size: 12px;
+                font-weight: 700;
+                color: #6f7b8f;
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
             }
 
             .input-wrap {
                 position: relative;
             }
 
+<<<<<<< HEAD
             .input-icon {
                 position: absolute;
                 left: 17px;
@@ -305,10 +440,43 @@
                     border-color: #1890ed;
                     box-shadow: 0 0 0 4px rgba(24, 144, 237, .10);
                     transform: translateY(-1px);
+=======
+                .input-wrap .bi:first-child {
+                    position: absolute;
+                    left: 17px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    color: #98a4b5;
+                    font-size: 16px;
+                    pointer-events: none;
+                }
+
+            .auth-input {
+                width: 100%;
+                height: 55px;
+                border: 1px solid transparent;
+                border-radius: 14px;
+                padding: 0 48px;
+                outline: 0;
+                background: var(--auth-field);
+                color: #1a2330;
+                transition: .2s ease;
+            }
+
+                .auth-input::placeholder {
+                    color: #a1abba;
+                }
+
+                .auth-input:focus {
+                    background: #fff;
+                    border-color: var(--auth-primary);
+                    box-shadow: 0 0 0 4px rgba(25,151,240,.10);
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 }
 
             .password-toggle {
                 position: absolute;
+<<<<<<< HEAD
                 right: 16px;
                 top: 50%;
                 transform: translateY(-50%);
@@ -333,13 +501,39 @@
                 align-items: center;
                 gap: 15px;
                 margin: 5px 0 28px;
+=======
+                right: 9px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 38px;
+                height: 38px;
+                border: 0;
+                border-radius: 10px;
+                background: transparent;
+                color: #8793a6;
+            }
+
+                .password-toggle:hover {
+                    background: #edf3f8;
+                    color: #536174;
+                }
+
+            .options {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+                margin: 5px 2px 23px;
+                color: #7b8798;
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 font-size: 13px;
             }
 
-            .remember-wrapper {
+            .remember {
                 display: flex;
                 align-items: center;
                 gap: 8px;
+<<<<<<< HEAD
                 color: #687487;
                 cursor: pointer;
             }
@@ -846,9 +1040,185 @@
                 .live-card {
                     top: 20px;
                     right: 20px;
+=======
+                cursor: pointer;
+            }
+
+            .form-check-input:checked {
+                background-color: var(--auth-primary);
+                border-color: var(--auth-primary);
+            }
+
+            .forgot {
+                color: var(--auth-primary);
+                text-decoration: none;
+                font-weight: 700;
+            }
+
+            .login-btn {
+                width: 100%;
+                height: 55px;
+                border: 0;
+                border-radius: 14px;
+                color: #fff;
+                font-weight: 800;
+                background: linear-gradient(135deg, #28a8ff, #148de5);
+                box-shadow: 0 13px 25px rgba(25,151,240,.24);
+                transition: transform .2s ease, box-shadow .2s ease;
+            }
+
+                .login-btn:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 16px 30px rgba(25,151,240,.31);
                 }
 
-                .login-options {
+                .login-btn:disabled {
+                    opacity: .72;
+                }
+
+            .register-copy {
+                margin-top: 24px;
+                text-align: center;
+                color: #8a95a7;
+                font-size: 13px;
+            }
+
+            .alert-clean {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 12px 14px;
+                margin-bottom: 17px;
+                border-radius: 12px;
+                font-size: 13px;
+            }
+
+            .success-alert {
+                color: #11774e;
+                background: #ecfbf4;
+                border: 1px solid #cceede;
+            }
+
+            .validation-summary-errors {
+                color: #b42318;
+                background: #fff3f2;
+                border: 1px solid #ffd6d2;
+            }
+
+                .validation-summary-errors ul {
+                    margin: 0;
+                    padding-left: 20px;
+                }
+
+            .text-danger {
+                color: #c0392b !important;
+                font-size: 12px;
+            }
+
+            .auth-visual {
+                position: relative;
+                overflow: hidden;
+                min-height: 670px;
+                background: radial-gradient(circle at 68% 16%, rgba(255,255,255,.9) 0 9%, transparent 28%), linear-gradient(180deg, #dceff0 0 35%, #79bcc5 36% 52%, #298b99 53% 65%, #126477 66% 100%);
+            }
+
+                .auth-visual::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(160deg, transparent 0 45%, rgba(30,96,104,.78) 46% 52%, transparent 53%), linear-gradient(145deg, transparent 0 36%, rgba(52,118,125,.84) 37% 49%, transparent 50%), linear-gradient(125deg, transparent 0 42%, rgba(125,170,168,.75) 43% 55%, transparent 56%);
+                    opacity: .82;
+                }
+
+                .auth-visual::after {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background: linear-gradient(90deg, rgba(255,255,255,.03), rgba(255,255,255,.28));
+                }
+
+            .visual-copy {
+                position: absolute;
+                left: 48px;
+                right: 48px;
+                bottom: 45px;
+                z-index: 3;
+                padding: 25px;
+                border: 1px solid rgba(255,255,255,.3);
+                border-radius: 18px;
+                color: #fff;
+                background: rgba(5,46,60,.30);
+                backdrop-filter: blur(12px);
+            }
+
+                .visual-copy h3 {
+                    margin: 0 0 7px;
+                    font-size: 25px;
+                    font-weight: 800;
+                }
+
+                .visual-copy p {
+                    margin: 0;
+                    color: rgba(255,255,255,.82);
+                    line-height: 1.6;
+                }
+
+            .wave {
+                position: absolute;
+                z-index: 4;
+                top: -2%;
+                left: -1px;
+                width: 105px;
+                height: 104%;
+                background: #fff;
+                border-radius: 0 52% 50% 0 / 0 17% 18% 0;
+                transform: translateX(-58px);
+            }
+
+            @@media (max-width: 900px) {
+                .auth-page {
+                    padding: 18px;
+                }
+
+                .auth-shell {
+                    grid-template-columns: 1fr;
+                    min-height: 0;
+                }
+
+                .auth-visual {
+                    display: none;
+                }
+
+                .auth-form-panel {
+                    min-height: calc(100vh - 36px);
+                    padding: 36px 32px;
+                }
+
+                .form-area {
+                    margin: auto;
+                }
+            }
+
+            @@media (max-width: 480px) {
+                .auth-page {
+                    padding: 0;
+                }
+
+                .auth-shell {
+                    border-radius: 0;
+                    min-height: 100vh;
+                }
+
+                .auth-form-panel {
+                    padding: 28px 22px;
+                }
+
+                h1 {
+                    font-size: 38px;
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
+                }
+
+                .options {
                     align-items: flex-start;
                     flex-direction: column;
                 }
@@ -856,7 +1226,16 @@
     </style>
 
 </head>
+<body>
+    <main class="auth-page">
+        <section class="auth-shell">
+            <div class="auth-form-panel">
+                <a class="brand" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark"></span>
+                    <span>Schedule Management<span class="dot">.</span></span>
+                </a>
 
+<<<<<<< HEAD
 <body>
 
     <div class="page-background">
@@ -906,21 +1285,22 @@
                         coaches and upcoming sports sessions.
                     </p>
 
+=======
+                <div class="form-area">
+                    <div class="eyebrow">Welcome back</div>
+                    <h1>Log in to your account<span class="dot">.</span></h1>
+                    <p class="subtext">New here? <a asp-controller="Account" asp-action="Register">Create an account</a></p>
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 
                     @if (TempData["SuccessMessage"] != null)
                     {
-                        <div class="success-message"
-                             id="successMessage">
-
+                        <div class="alert-clean success-alert" id="successMessage">
                             <i class="bi bi-check-circle-fill"></i>
-
-                            <span>
-                                @TempData["SuccessMessage"]
-                            </span>
-
+                            <span>@TempData["SuccessMessage"]</span>
                         </div>
                     }
 
+<<<<<<< HEAD
 
                     <form asp-controller="Account"
                           asp-action="Login"
@@ -958,11 +1338,23 @@
                                        placeholder="you@example.com"
                                        autocomplete="email"
                                        required />
+=======
+                    <form asp-controller="Account" asp-action="Login" method="post" id="loginForm">
+                        @Html.AntiForgeryToken()
 
+                        <div asp-validation-summary="ModelOnly" class="alert-clean validation-summary-errors"></div>
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
+
+                        <div class="field">
+                            <label asp-for="Email" class="field-label">Email address</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-envelope"></i>
+                                <input asp-for="Email" type="email" class="auth-input" placeholder="name@example.com" autocomplete="email" />
                             </div>
-
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
+<<<<<<< HEAD
 
                         <!-- PASSWORD -->
 
@@ -994,14 +1386,21 @@
                                         id="passwordToggle"
                                         aria-label="Show password">
 
+=======
+                        <div class="field">
+                            <label asp-for="Password" class="field-label">Password</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-lock"></i>
+                                <input asp-for="Password" type="password" id="Password" class="auth-input" placeholder="Enter your password" autocomplete="current-password" />
+                                <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                                     <i class="bi bi-eye"></i>
-
                                 </button>
-
                             </div>
-
+                            <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
+<<<<<<< HEAD
 
                         <!-- REMEMBER / FORGOT -->
 
@@ -1015,9 +1414,14 @@
                                        value="true"
                                        class="form-check-input" />
 
+=======
+                        <div class="options">
+                            <label class="remember">
+                                <input asp-for="RememberMe" class="form-check-input" />
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                                 <span>Remember me</span>
-
                             </label>
+<<<<<<< HEAD
 
 
                             <a href="#"
@@ -1057,9 +1461,20 @@
                             </span>
 
                         </button>
+=======
+                            <a href="#" class="forgot" onclick="return false;">Forgot password?</a>
+                        </div>
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 
+                        <button type="submit" class="login-btn" id="loginButton">
+                            <span id="loginButtonText">Log in <i class="bi bi-arrow-right ms-1"></i></span>
+                            <span id="loginButtonLoader" class="d-none">
+                                <span class="spinner-border spinner-border-sm me-2"></span>Logging in...
+                            </span>
+                        </button>
                     </form>
 
+<<<<<<< HEAD
 
                     <div class="register-text">
 
@@ -1074,6 +1489,9 @@
 
                     </div>
 
+=======
+                    <div class="register-copy">Don't have an account? <a asp-controller="Account" asp-action="Register">Sign up free</a></div>
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 </div>
 
             </section>
@@ -1187,14 +1605,28 @@
 
             </section>
 
+<<<<<<< HEAD
         </div>
 
     </main>
 
 
+=======
+            <aside class="auth-visual" aria-label="Schedule Management visual">
+                <div class="wave" aria-hidden="true"></div>
+                <div class="visual-copy">
+                    <h3>Plan smarter. Stay on schedule.</h3>
+                    <p>Manage activities, coaches and bookings from one simple place.</p>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<<<<<<< HEAD
 
     <partial name="_ValidationScriptsPartial" />
 
@@ -1303,3 +1735,42 @@
 </body>
 
 </html>
+=======
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const passwordInput = document.getElementById("Password");
+                const passwordToggle = document.getElementById("passwordToggle");
+                const loginForm = document.getElementById("loginForm");
+                const loginButton = document.getElementById("loginButton");
+                const loginButtonText = document.getElementById("loginButtonText");
+                const loginButtonLoader = document.getElementById("loginButtonLoader");
+
+                passwordToggle?.addEventListener("click", function() {
+                    const icon = this.querySelector("i");
+                    const showPassword = passwordInput.type === "password";
+                    passwordInput.type = showPassword ? "text" : "password";
+                    icon.classList.toggle("bi-eye", !showPassword);
+                    icon.classList.toggle("bi-eye-slash", showPassword);
+                    this.setAttribute("aria-label", showPassword ? "Hide password" : "Show password");
+                });
+
+                loginForm?.addEventListener("submit", function() {
+                    if (window.jQuery && typeof $(loginForm).valid === "function" && !$(loginForm).valid()) return;
+                    loginButtonText.classList.add("d-none");
+                    loginButtonLoader.classList.remove("d-none");
+                    loginButton.disabled = true;
+                });
+
+                const successMessage = document.getElementById("successMessage");
+                if (successMessage) {
+                    setTimeout(function() {
+                        successMessage.style.transition = "opacity .3s ease";
+                        successMessage.style.opacity = "0";
+                    }, 4500);
+                }
+            });
+    </script>
+</body>
+</html>
+>>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
