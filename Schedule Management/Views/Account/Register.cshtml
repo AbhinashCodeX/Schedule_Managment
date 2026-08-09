@@ -1,26 +1,16 @@
-<<<<<<< HEAD
-﻿@model Schedule_Management.ViewModels.RegisterViewModel
-
-=======
 @model Schedule_Management.ViewModels.RegisterViewModel
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
+
 @{
     ViewData["Title"] = "Register";
     Layout = null;
 }
-<<<<<<< HEAD
 
 <!DOCTYPE html>
 <html lang="en">
 
-=======
-<!DOCTYPE html>
-<html lang="en">
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 <head>
 
     <meta charset="utf-8" />
-<<<<<<< HEAD
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0" />
@@ -37,27 +27,11 @@
 
 
     <style>
-=======
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Schedule Management</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <style>
-            :root {
-                --primary: #1997f0;
-                --primary-dark: #0c7fce;
-                --text: #111827;
-                --muted: #8a95a6;
-                --field: #f6f8fb;
-                --line: #e9edf3;
-            }
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
 
             * {
                 box-sizing: border-box;
             }
 
-<<<<<<< HEAD
             html,
             body {
                 margin: 0;
@@ -73,8 +47,8 @@
 
 
             /* =====================================
-                                   BACKGROUND
-                                ====================================== */
+                       BACKGROUND
+                    ====================================== */
 
             .page-background {
                 position: fixed;
@@ -121,8 +95,8 @@
 
 
             /* =====================================
-                                   WRAPPER
-                                ====================================== */
+                       WRAPPER
+                    ====================================== */
 
             .register-page {
                 min-height: 100vh;
@@ -147,8 +121,8 @@
 
 
             /* =====================================
-                                   SPORTS PANEL
-                                ====================================== */
+                       SPORTS PANEL
+                    ====================================== */
 
             .sports-panel {
                 min-height: 790px;
@@ -374,8 +348,8 @@
 
 
             /* =====================================
-                                   FORM PANEL
-                                ====================================== */
+                       FORM PANEL
+                    ====================================== */
 
             .form-panel {
                 position: relative;
@@ -423,111 +397,19 @@
                 margin: 9px 0 0;
                 color: #8a95a6;
                 font-size: 13px;
-=======
-            html, body {
-                min-height: 100%;
-            }
-
-            body {
-                margin: 0;
-                min-height: 100vh;
-                font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-                color: var(--text);
-                background: #edf2f6;
-            }
-
-            .auth-page {
-                min-height: 100vh;
-                display: grid;
-                place-items: center;
-                padding: 30px;
-            }
-
-            .auth-shell {
-                width: min(1240px, 100%);
-                min-height: 760px;
-                display: grid;
-                grid-template-columns: 64% 36%;
-                overflow: hidden;
-                border-radius: 24px;
-                background: #fff;
-                box-shadow: 0 24px 65px rgba(35,54,75,.13);
-            }
-
-            .form-panel {
-                padding: 34px 54px 40px;
-            }
-
-            .brand {
-                display: inline-flex;
-                align-items: center;
-                gap: 12px;
-                color: #111827;
-                text-decoration: none;
-                font-weight: 800;
-            }
-
-            .brand-mark {
-                width: 31px;
-                height: 31px;
-                border-radius: 50%;
-                background: linear-gradient(145deg, #52b7ff, #167ee8);
-                box-shadow: 0 8px 18px rgba(25,151,240,.22);
-            }
-
-            .heading {
-                margin: 34px 0 26px;
-            }
-
-            .eyebrow {
-                margin-bottom: 7px;
-                color: #98a3b3;
-                font-size: 12px;
-                font-weight: 800;
-                text-transform: uppercase;
-                letter-spacing: .12em;
-            }
-
-            h1 {
-                margin: 0;
-                font-size: clamp(33px, 4vw, 46px);
-                font-weight: 800;
-                letter-spacing: -1.5px;
-            }
-
-            .dot {
-                color: var(--primary);
-            }
-
-            .heading p {
-                margin: 9px 0 0;
-                color: var(--muted);
-                font-size: 14px;
-            }
-
-            .heading a {
-                color: var(--primary);
-                text-decoration: none;
-                font-weight: 700;
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
             }
 
 
             /* =====================================
-                                   SECTION HEADING
-                                ====================================== */
+                       SECTION HEADING
+                    ====================================== */
 
             .section-title {
                 display: flex;
                 align-items: center;
                 gap: 9px;
-<<<<<<< HEAD
                 margin: 25px 0 15px;
                 color: #344054;
-=======
-                margin: 22px 0 14px;
-                color: #445165;
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 font-size: 13px;
                 font-weight: 800;
             }
@@ -538,17 +420,15 @@
 
                 .section-title::after {
                     content: "";
-                    flex: 1;
                     height: 1px;
-<<<<<<< HEAD
                     flex: 1;
                     background: linear-gradient( 90deg, #e3eaf1, transparent );
                 }
 
 
             /* =====================================
-                                   INPUTS
-                                ====================================== */
+                       INPUTS
+                    ====================================== */
 
             .form-group-custom {
                 margin-bottom: 16px;
@@ -616,78 +496,10 @@
 
             .password-input {
                 padding-right: 46px;
-=======
-                    background: var(--line);
-                }
-
-                .section-title i {
-                    color: var(--primary);
-                }
-
-            .field {
-                margin-bottom: 14px;
-            }
-
-            .field-label {
-                display: block;
-                margin: 0 0 6px 3px;
-                color: #6f7b8f;
-                font-size: 12px;
-                font-weight: 700;
-            }
-
-            .input-wrap {
-                position: relative;
-            }
-
-                .input-wrap > i {
-                    position: absolute;
-                    left: 16px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    color: #9aa6b7;
-                    pointer-events: none;
-                    z-index: 2;
-                }
-
-            .auth-control {
-                width: 100%;
-                min-height: 51px;
-                border: 1px solid transparent;
-                border-radius: 13px;
-                padding: 0 43px;
-                outline: 0;
-                background: var(--field);
-                color: #1b2636;
-                transition: .2s ease;
-            }
-
-            select.auth-control {
-                appearance: auto;
-                padding-right: 16px;
-            }
-
-            textarea.auth-control {
-                min-height: 86px;
-                resize: vertical;
-                padding-top: 14px;
-                padding-bottom: 14px;
-            }
-
-            .auth-control::placeholder {
-                color: #a6afbc;
-            }
-
-            .auth-control:focus {
-                background: #fff;
-                border-color: var(--primary);
-                box-shadow: 0 0 0 4px rgba(25,151,240,.1);
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
             }
 
             .password-toggle {
                 position: absolute;
-<<<<<<< HEAD
                 z-index: 4;
                 top: 50%;
                 right: 14px;
@@ -725,8 +537,8 @@
 
 
             /* =====================================
-                                   REGISTER BUTTON
-                                ====================================== */
+                       REGISTER BUTTON
+                    ====================================== */
 
             .register-button {
                 min-height: 51px;
@@ -781,8 +593,8 @@
 
 
             /* =====================================
-                                   ANIMATIONS
-                                ====================================== */
+                       ANIMATIONS
+                    ====================================== */
 
             @@keyframes shellEnter {
 
@@ -881,8 +693,8 @@
 
 
             /* =====================================
-                                   RESPONSIVE
-                                ====================================== */
+                       RESPONSIVE
+                    ====================================== */
 
             @@media (max-width: 1100px) {
 
@@ -965,164 +777,12 @@
 
                 .form-heading h1 {
                     font-size: 31px;
-=======
-                top: 50%;
-                right: 8px;
-                transform: translateY(-50%);
-                width: 36px;
-                height: 36px;
-                border: 0;
-                border-radius: 10px;
-                background: transparent;
-                color: #8793a6;
-            }
-
-                .password-toggle:hover {
-                    background: #edf3f8;
-                }
-
-            .submit-btn {
-                width: 100%;
-                height: 54px;
-                margin-top: 9px;
-                border: 0;
-                border-radius: 14px;
-                color: #fff;
-                font-weight: 800;
-                background: linear-gradient(135deg, #28a8ff, #148de5);
-                box-shadow: 0 13px 25px rgba(25,151,240,.24);
-                transition: .2s ease;
-            }
-
-                .submit-btn:hover:not(:disabled) {
-                    transform: translateY(-2px);
-                    box-shadow: 0 16px 30px rgba(25,151,240,.31);
-                }
-
-                .submit-btn:disabled {
-                    opacity: .72;
-                }
-
-            .text-danger {
-                color: #c0392b !important;
-                display: block;
-                margin-top: 4px;
-                font-size: 12px;
-            }
-
-            .validation-summary-errors {
-                color: #b42318;
-                background: #fff3f2;
-                border: 1px solid #ffd6d2;
-                padding: 11px 14px;
-                border-radius: 12px;
-                font-size: 13px;
-                margin-bottom: 16px;
-            }
-
-                .validation-summary-errors ul {
-                    margin: 0;
-                    padding-left: 19px;
-                }
-
-            .visual {
-                position: relative;
-                overflow: hidden;
-                min-height: 760px;
-                background: radial-gradient(circle at 68% 16%, rgba(255,255,255,.9) 0 8%, transparent 27%), linear-gradient(180deg, #dfeff0 0 34%, #82c2ca 35% 50%, #2b929f 51% 67%, #126477 68% 100%);
-            }
-
-                .visual::before {
-                    content: "";
-                    position: absolute;
-                    inset: 0;
-                    background: linear-gradient(155deg, transparent 0 43%, rgba(35,102,110,.84) 44% 51%, transparent 52%), linear-gradient(140deg, transparent 0 35%, rgba(56,121,127,.88) 36% 48%, transparent 49%), linear-gradient(122deg, transparent 0 44%, rgba(125,170,168,.75) 45% 57%, transparent 58%);
-                }
-
-            .visual-card {
-                position: absolute;
-                z-index: 3;
-                left: 34px;
-                right: 34px;
-                bottom: 36px;
-                padding: 23px;
-                border: 1px solid rgba(255,255,255,.32);
-                border-radius: 18px;
-                color: #fff;
-                background: rgba(5,46,60,.31);
-                backdrop-filter: blur(12px);
-            }
-
-                .visual-card h3 {
-                    margin: 0 0 7px;
-                    font-size: 23px;
-                    font-weight: 800;
-                }
-
-                .visual-card p {
-                    margin: 0;
-                    color: rgba(255,255,255,.84);
-                    line-height: 1.55;
-                }
-
-            .wave {
-                position: absolute;
-                z-index: 4;
-                top: -2%;
-                left: -1px;
-                width: 95px;
-                height: 104%;
-                background: #fff;
-                border-radius: 0 52% 50% 0 / 0 17% 18% 0;
-                transform: translateX(-55px);
-            }
-
-            @@media (max-width: 1020px) {
-                .auth-shell {
-                    grid-template-columns: 1fr;
-                }
-
-                .visual {
-                    display: none;
-                }
-
-                .form-panel {
-                    padding: 36px 42px 44px;
-                }
-            }
-
-            @@media (max-width: 700px) {
-                .auth-page {
-                    padding: 0;
-                }
-
-                .auth-shell {
-                    border-radius: 0;
-                    min-height: 100vh;
-                }
-
-                .form-panel {
-                    padding: 28px 22px 36px;
-                }
-
-                .heading {
-                    margin-top: 28px;
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
                 }
             }
     </style>
 
 </head>
-<body>
-    <main class="auth-page">
-        <section class="auth-shell">
-            <div class="form-panel">
-                <a class="brand" asp-controller="Home" asp-action="Index">
-                    <span class="brand-mark"></span>
-                    <span>Schedule Management<span class="dot">.</span></span>
-                </a>
 
-<<<<<<< HEAD
 
 <body>
 
@@ -1873,206 +1533,8 @@
                         .append(
                             '<option value="">Select State</option>'
                         );
-=======
-                <div class="heading">
-                    <div class="eyebrow">Start for free</div>
-                    <h1>Create new account<span class="dot">.</span></h1>
-                    <p>Already a member? <a asp-controller="Account" asp-action="Login">Log in</a></p>
-                </div>
 
-                <form asp-controller="Account" asp-action="Register" method="post" id="registerForm">
-                    @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-                    <div class="section-title"><i class="bi bi-person-vcard"></i> Personal information</div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="FullName" class="field-label"></label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-person"></i>
-                                    <input asp-for="FullName" class="auth-control" placeholder="Enter full name" />
-                                </div>
-                                <span asp-validation-for="FullName" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="Email" class="field-label"></label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-envelope"></i>
-                                    <input asp-for="Email" class="auth-control" placeholder="Enter email address" />
-                                </div>
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="PhoneNumber" class="field-label"></label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-telephone"></i>
-                                    <input asp-for="PhoneNumber" class="auth-control" placeholder="Enter phone number" />
-                                </div>
-                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="RegisterAs" class="field-label">Register As</label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-people"></i>
-                                    <select asp-for="RegisterAs" class="auth-control">
-                                        <option value="">Select Role</option>
-                                        <option value="User">User</option>
-                                        <option value="Coach">Coach</option>
-                                    </select>
-                                </div>
-                                <span asp-validation-for="RegisterAs" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="Password" class="field-label"></label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-lock"></i>
-                                    <input asp-for="Password" type="password" id="Password" class="auth-control" placeholder="Enter password" />
-                                    <button type="button" class="password-toggle" onclick="togglePassword('Password', this)" aria-label="Show password"><i class="bi bi-eye"></i></button>
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="field">
-                                <label asp-for="ConfirmPassword" class="field-label"></label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-lock-fill"></i>
-                                    <input asp-for="ConfirmPassword" type="password" id="ConfirmPassword" class="auth-control" placeholder="Confirm password" />
-                                    <button type="button" class="password-toggle" onclick="togglePassword('ConfirmPassword', this)" aria-label="Show password"><i class="bi bi-eye"></i></button>
-                                </div>
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section-title"><i class="bi bi-geo-alt"></i> Location details</div>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="field">
-                                <label class="field-label">Country</label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-globe"></i>
-                                    <select id="CountryId" class="auth-control">
-                                        <option value="">Select Country</option>
-                                        @if (ViewBag.Countries != null)
-                                        {
-                                            foreach (var country in ViewBag.Countries)
-                                            {
-                                                <option value="@country.CountryId">@country.CountryName</option>
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="field">
-                                <label class="field-label">State</label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-map"></i>
-                                    <select id="StateId" class="auth-control">
-                                        <option value="">Select State</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="field">
-                                <label asp-for="DistrictId" class="field-label">District</label>
-                                <div class="input-wrap">
-                                    <i class="bi bi-pin-map"></i>
-                                    <select asp-for="DistrictId" id="DistrictId" class="auth-control">
-                                        <option value="">Select District</option>
-                                    </select>
-                                </div>
-                                <span asp-validation-for="DistrictId" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label asp-for="FullAddress" class="field-label">Full Address</label>
-                        <div class="input-wrap">
-                            <i class="bi bi-house-door" style="top:20px; transform:none;"></i>
-                            <textarea asp-for="FullAddress" class="auth-control" rows="3" placeholder="Enter complete address"></textarea>
-                        </div>
-                        <span asp-validation-for="FullAddress" class="text-danger"></span>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="registerButton">
-                        <span id="buttonText">Create account <i class="bi bi-arrow-right ms-1"></i></span>
-                        <span id="buttonLoader" class="d-none"><span class="spinner-border spinner-border-sm me-2"></span>Creating account...</span>
-                    </button>
-                </form>
-            </div>
-
-            <aside class="visual" aria-label="Schedule Management visual">
-                <div class="wave" aria-hidden="true"></div>
-                <div class="visual-card">
-                    <h3>Your schedule, beautifully organized.</h3>
-                    <p>Create an account and manage activities, availability and bookings with less friction.</p>
-                </div>
-            </aside>
-        </section>
-    </main>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-            function togglePassword(inputId, button) {
-                const input = document.getElementById(inputId);
-                const icon = button.querySelector("i");
-                const show = input.type === "password";
-                input.type = show ? "text" : "password";
-                icon.classList.toggle("bi-eye", !show);
-                icon.classList.toggle("bi-eye-slash", show);
-                button.setAttribute("aria-label", show ? "Hide password" : "Show password");
-            }
-
-            $(document).ready(function() {
-                $("#CountryId").on("change", function() {
-                    const countryId = $(this).val();
-                    $("#StateId").empty().append('<option value="">Select State</option>');
-                    $("#DistrictId").empty().append('<option value="">Select District</option>');
-                    if (!countryId) return;
-
-                    $.ajax({
-                        url: '@Url.Action("GetStates", "Location")',
-                        type: "GET",
-                        data: { countryId: countryId },
-                        success: function(states) {
-                            $.each(states, function(_, state) {
-                                $("#StateId").append($("<option></option>").val(state.stateId).text(state.stateName));
-                            });
-                        },
-                        error: function() { alert("Unable to load states."); }
-                    });
-                });
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
-
-                $("#StateId").on("change", function() {
-                    const stateId = $(this).val();
-                    $("#DistrictId").empty().append('<option value="">Select District</option>');
-                    if (!stateId) return;
-
-<<<<<<< HEAD
                     $("#DistrictId")
                         .empty()
                         .append(
@@ -2270,28 +1732,3 @@
 </body>
 
 </html>
-=======
-                    $.ajax({
-                        url: '@Url.Action("GetDistricts", "Location")',
-                        type: "GET",
-                        data: { stateId: stateId },
-                        success: function(districts) {
-                            $.each(districts, function(_, district) {
-                                $("#DistrictId").append($("<option></option>").val(district.districtId).text(district.districtName));
-                            });
-                        },
-                        error: function() { alert("Unable to load districts."); }
-                    });
-                });
-
-                $("#registerForm").on("submit", function() {
-                    if (typeof $(this).valid === "function" && !$(this).valid()) return;
-                    $("#buttonText").addClass("d-none");
-                    $("#buttonLoader").removeClass("d-none");
-                    $("#registerButton").prop("disabled", true);
-                });
-            });
-    </script>
-</body>
-</html>
->>>>>>> d2773e0c605022c321a8706e16592d81a825d5f9
