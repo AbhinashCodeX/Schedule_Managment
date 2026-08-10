@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Schedule_Management.Models;
 using Schedule_Management.ViewModels;
-
+//CTRL + M + O to collapse all methods in the file
 namespace Schedule_Management.Controllers
 {
     public class ActivityTypeController : Controller
