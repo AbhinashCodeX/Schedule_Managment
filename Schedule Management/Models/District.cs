@@ -8,7 +8,7 @@ namespace Schedule_Management.Models;
 
 [Index("StateId", Name = "IX_Districts_StateId")]
 [Index("StateId", "DistrictCode", Name = "UQ_Districts_State_DistrictCode", IsUnique = true)]
-public partial class District
+public partial class    District
 {
     [Key]
     public int DistrictId { get; set; }

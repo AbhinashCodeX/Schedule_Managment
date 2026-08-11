@@ -77,5 +77,37 @@ namespace Schedule_Management.Controllers
 
             return View(users);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await _context.Users
+                .Where(x => x.UserId == id)
+                .Select(x => new
+                {
+                    x.UserId,
+                    x.FullName,
+                    x.Email,
+                    x.PhoneNumber,
+                    x.FullAddress,
+                    x.RoleId
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "User not found"
+                });
+            }
+
+            return Json(new
+            {
+                success = true,
+                data = user
+            });
+        }
     }
 }

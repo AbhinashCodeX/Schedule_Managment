@@ -55,6 +55,7 @@
                                 <th>District</th>
                                 <th>Status</th>
                                 <th>Created On</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
@@ -123,6 +124,15 @@
                                         @item.CreatedOn.ToString(
                                             "dd MMM yyyy")
                                     </td>
+
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm btn-edit-user"
+                                                data-id="@item.UserId">
+                                            <i class="bi bi-pencil-square"></i>
+                                            Edit
+                                        </button>
+                                    </td>
                                 </tr>
 
                                 serialNumber++;
@@ -138,3 +148,127 @@
         </div>
     </div>
 </div>
+<!--Modal Opening-->
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User / Coach</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="editUserForm">
+
+                    <input type="hidden" id="editUserId" name="UserId" />
+                    <input type="hidden" id="editRoleId" name="RoleId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text"
+                               class="form-control"
+                               id="editFullName"
+                               name="FullName" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email"
+                               class="form-control"
+                               id="editEmail"
+                               name="Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text"
+                               class="form-control"
+                               id="editPhoneNumber"
+                               name="PhoneNumber" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Address</label>
+
+                        <textarea class="form-control"
+                                  id="editFullAddress"
+                                  name="FullAddress"
+                                  rows="3"></textarea>
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="btnUpdateUser">
+                    Update
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).on("click", ".btn-edit-user", function () {
+
+            var userId = $(this).data("id");
+
+            $.ajax({
+                url: '@Url.Action("GetUserById", "Admin")',
+                type: 'GET',
+                data: {
+                    id: userId
+                },
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        $("#editUserId").val(response.data.userId);
+                        $("#editFullName").val(response.data.fullName);
+                        $("#editEmail").val(response.data.email);
+                        $("#editPhoneNumber").val(response.data.phoneNumber);
+                        $("#editFullAddress").val(response.data.fullAddress);
+                        $("#editRoleId").val(response.data.roleId);
+
+                        var modal = new bootstrap.Modal(
+                            document.getElementById('editUserModal')
+                        );
+
+                        modal.show();
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+
+                error: function () {
+                    toastr.error("Something went wrong while loading user details.");
+                }
+            });
+
+        });
+    </script>
+}
