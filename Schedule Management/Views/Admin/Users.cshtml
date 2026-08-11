@@ -29,9 +29,111 @@
 
     </div>
 
+    <!-- SEARCH FORM START -->
+    <form asp-controller="Admin"
+          asp-action="Users"
+          method="get"
+          class="row g-2 mb-3">
+
+        <div class="col-md-5">
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   class="form-control"
+                   placeholder="Search name, email or phone..." />
+        </div>
+        <div class="col-md-3">
+            <select name="role"
+                    class="form-select">
+
+                <option value="">All Roles</option>
+
+                <option value="User"
+                        selected="@(ViewBag.Role == "User")">
+                    User
+                </option>
+
+                <option value="Coach"
+                        selected="@(ViewBag.Role == "Coach")">
+                    Coach
+                </option>
+
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="status" class="form-select">
+
+                <option value="">All Status</option>
+
+                <option value="Active"
+                        selected="@(ViewBag.Status == "Active")">
+                    Active
+                </option>
+
+                <option value="Inactive"
+                        selected="@(ViewBag.Status == "Inactive")">
+                    Inactive
+                </option>
+
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="sortOrder"
+                    class="form-select">
+
+                <option value=""
+                        selected="@(string.IsNullOrEmpty(ViewBag.SortOrder))">
+                    Name A-Z
+                </option>
+
+                <option value="name_desc"
+                        selected="@(ViewBag.SortOrder == "name_desc")">
+                    Name Z-A
+                </option>
+
+                <option value="newest"
+                        selected="@(ViewBag.SortOrder == "newest")">
+                    Newest
+                </option>
+
+                <option value="oldest"
+                        selected="@(ViewBag.SortOrder == "oldest")">
+                    Oldest
+                </option>
+
+            </select>
+        </div>
+
+
+        <div class="col-auto">
+            <button type="submit"
+                    class="btn btn-primary">
+                <i class="bi bi-search"></i>
+                Search
+            </button>
+        </div>
+
+        <div class="col-auto">
+            <a asp-controller="Admin"
+               asp-action="Users"
+               class="btn btn-secondary">
+                Reset
+            </a>
+        </div>
+
+    </form>
+    <!-- SEARCH FORM END -->
+
+
     <div class="card shadow-sm border-0">
 
         <div class="card-body">
+
+            <div class="text-muted mb-2">
+                Total Records: @ViewBag.TotalRecords
+            </div>
 
             @if (!Model.Any())
             {
@@ -132,6 +234,14 @@
                                             <i class="bi bi-pencil-square"></i>
                                             Edit
                                         </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm @(item.IsActive ? "btn-danger" : "btn-success") btn-change-status"
+                                                data-id="@item.UserId"
+                                                data-active="@item.IsActive.ToString().ToLower()">
+
+                                            @(item.IsActive ? "Deactivate" : "Activate")
+                                        </button>
                                     </td>
                                 </tr>
 
@@ -143,6 +253,61 @@
                     </table>
 
                 </div>
+
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center">
+
+                            <!-- PREVIOUS -->
+                            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Users"
+                                   asp-route-page="@(ViewBag.CurrentPage - 1)"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-role="@ViewBag.Role"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- PAGE NUMBERS -->
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                                    <a class="page-link"
+                                       asp-action="Users"
+                                       asp-route-page="@i"
+                                       asp-route-search="@ViewBag.Search"
+                                       asp-route-role="@ViewBag.Role"
+                                       asp-route-status="@ViewBag.Status"
+                                       asp-route-sortOrder="@ViewBag.SortOrder">
+                                        @i
+                                    </a>
+
+                                </li>
+                            }
+
+                            <!-- NEXT -->
+                            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+
+                                <a class="page-link"
+                                   asp-action="Users"
+                                   asp-route-page="@(ViewBag.CurrentPage + 1)"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-role="@ViewBag.Role"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                    Next
+                                </a>
+
+                            </li>
+
+                        </ul>
+                    </nav>
+                }
             }
 
         </div>
@@ -231,7 +396,7 @@
 @section Scripts
 {
     <script>
-        $(document).on("click", ".btn-edit-user", function () {
+        $(document).on("click", ".btn-edit-user", function() {
 
             var userId = $(this).data("id");
 
@@ -242,7 +407,7 @@
                     id: userId
                 },
 
-                success: function (response) {
+                success: function(response) {
 
                     if (response.success) {
 
@@ -264,11 +429,108 @@
                     }
                 },
 
-                error: function () {
+                error: function() {
                     toastr.error("Something went wrong while loading user details.");
                 }
             });
 
         });
+
+        $("#btnUpdateUser").click(function() {
+
+            var formData = {
+                UserId: $("#editUserId").val(),
+                FullName: $("#editFullName").val(),
+                Email: $("#editEmail").val(),
+                PhoneNumber: $("#editPhoneNumber").val(),
+                FullAddress: $("#editFullAddress").val(),
+                RoleId: $("#editRoleId").val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("UpdateUser", "Admin")',
+                type: 'POST',
+                data: formData,
+
+                success: function(response) {
+
+                    if (response.success) {
+
+                        toastr.success(response.message);
+
+                        var modalElement =
+                            document.getElementById("editUserModal");
+
+                        var modal =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        modal.hide();
+
+                        setTimeout(function() {
+                            location.reload();
+                        }, 800);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+
+                error: function() {
+                    toastr.error("Something went wrong while updating user.");
+                }
+            });
+
+        });
+
+
+        $(document).on("click", ".btn-change-status", function() {
+
+            var button = $(this);
+            var userId = button.data("id");
+            var isActive = button.data("active");
+
+            var actionText = isActive ? "deactivate" : "activate";
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to " + actionText + " this user?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, " + actionText,
+                cancelButtonText: "Cancel"
+            }).then(function(result) {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '@Url.Action("ChangeUserStatus", "Admin")',
+                        type: 'POST',
+                        data: {
+                            id: userId
+                        },
+
+                        success: function(response) {
+
+                            if (response.success) {
+
+                                toastr.success(response.message);
+
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 700);
+                            }
+                            else {
+                                toastr.error(response.message);
+                            }
+                        },
+
+                        error: function() {
+                            toastr.error("Something went wrong while changing status.");
+                        }
+                    });
+                }
+            });
+        });
     </script>
 }
+
