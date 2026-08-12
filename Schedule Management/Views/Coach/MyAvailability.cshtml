@@ -1,0 +1,478 @@
+﻿@model IEnumerable<Schedule_Management.ViewModels.CoachAvailabilityViewModel>
+
+@{
+    ViewData["Title"] = "My Availability";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-check"></i>
+                My Availability
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage your available activity dates and time slots.
+            </p>
+        </div>
+
+        <div>
+            <a asp-controller="Coach"
+               asp-action="Dashboard"
+               class="btn btn-outline-secondary me-2">
+                <i class="bi bi-arrow-left"></i>
+                Dashboard
+            </a>
+
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addAvailabilityModal">
+                <i class="bi bi-plus-circle"></i>
+                Add Availability
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    No availability records found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Activity</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Booking</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.ActivityName
+                                    </td>
+
+                                    <td>
+                                        @item.AvailableDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @item.StartTime.ToString("hh:mm tt")
+                                    </td>
+
+                                    <td>
+                                        @item.EndTime.ToString("hh:mm tt")
+                                    </td>
+
+                                    <td>
+                                        @if (item.IsBooked)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Booked
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info text-dark">
+                                                Available
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm">
+                                            Edit
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm @(item.IsActive ? "btn-danger" : "btn-success")">
+
+                                            @(item.IsActive
+                                                ? "Deactivate"
+                                                : "Activate")
+
+                                        </button>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--Modal-->
+<div class="modal fade"
+     id="addAvailabilityModal"
+     tabindex="-1"
+     aria-labelledby="addAvailabilityModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="addAvailabilityModalLabel">
+                    Add Availability
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <form id="addAvailabilityForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Activity Type
+                        </label>
+
+                        <select id="activityTypeId"
+                                name="ActivityTypeId"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Activity --
+                            </option>
+
+                            @foreach (var item in ViewBag.ActivityTypes)
+                            {
+                                <option value="@item.ActivityTypeId">
+                                    @item.ActivityName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span id="activityTypeError"
+                              class="text-danger small">
+                        </span>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                From Date
+                            </label>
+
+                            <input type="date"
+                                   id="fromDate"
+                                   name="FromDate"
+                                   class="form-control" />
+
+                            <span id="fromDateError"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                To Date
+                            </label>
+
+                            <input type="date"
+                                   id="toDate"
+                                   name="ToDate"
+                                   class="form-control" />
+
+                            <span id="toDateError"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Start Time
+                            </label>
+
+                            <input type="time"
+                                   id="startTime"
+                                   name="StartTime"
+                                   class="form-control" />
+
+                            <span id="startTimeError"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                End Time
+                            </label>
+
+                            <input type="time"
+                                   id="endTime"
+                                   name="EndTime"
+                                   class="form-control" />
+
+                            <span id="endTimeError"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="btnSaveAvailability">
+                    Save Availability
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+
+        $("#btnSaveAvailability").click(function() {
+
+            // Old errors clear
+            $("#activityTypeError").text("");
+            $("#fromDateError").text("");
+            $("#toDateError").text("");
+            $("#startTimeError").text("");
+            $("#endTimeError").text("");
+
+            var activityTypeId = $("#activityTypeId").val();
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+
+            var isValid = true;
+
+
+            // Activity validation
+            if (!activityTypeId) {
+                $("#activityTypeError")
+                    .text("Please select an Activity Type.");
+
+                isValid = false;
+            }
+
+
+            // From Date
+            if (!fromDate) {
+                $("#fromDateError")
+                    .text("From Date is required.");
+
+                isValid = false;
+            }
+
+
+            // To Date
+            if (!toDate) {
+                $("#toDateError")
+                    .text("To Date is required.");
+
+                isValid = false;
+            }
+
+
+            // Start Time
+            if (!startTime) {
+                $("#startTimeError")
+                    .text("Start Time is required.");
+
+                isValid = false;
+            }
+
+
+            // End Time
+            if (!endTime) {
+                $("#endTimeError")
+                    .text("End Time is required.");
+
+                isValid = false;
+            }
+
+
+            if (!isValid) {
+                return;
+            }
+
+
+            // Date validation
+            if (toDate < fromDate) {
+
+                $("#toDateError")
+                    .text("To Date cannot be before From Date.");
+
+                return;
+            }
+
+
+            // Time validation
+            if (endTime <= startTime) {
+
+                $("#endTimeError")
+                    .text("End Time must be greater than Start Time.");
+
+                return;
+            }
+
+
+            var token =
+                $('input[name="__RequestVerificationToken"]').val();
+
+
+            $.ajax({
+
+                url: '@Url.Action("CreateAvailability", "Coach")',
+
+                type: 'POST',
+
+                data: {
+                    __RequestVerificationToken: token,
+
+                    ActivityTypeId: activityTypeId,
+                    FromDate: fromDate,
+                    ToDate: toDate,
+                    StartTime: startTime,
+                    EndTime: endTime
+                },
+
+
+                success: function(response) {
+
+                    if (response.success) {
+
+                        toastr.success(response.message);
+
+                        var modalElement =
+                            document.getElementById(
+                                "addAvailabilityModal"
+                            );
+
+                        var modal =
+                            bootstrap.Modal.getInstance(
+                                modalElement
+                            );
+
+                        modal.hide();
+
+
+                        setTimeout(function() {
+
+                            location.reload();
+
+                        }, 700);
+
+                    }
+                    else {
+
+                        toastr.error(response.message);
+                    }
+
+                },
+
+
+                error: function() {
+
+                    toastr.error(
+                        "Something went wrong while adding availability."
+                    );
+
+                }
+
+            });
+
+        });
+
+    </script>
+}
