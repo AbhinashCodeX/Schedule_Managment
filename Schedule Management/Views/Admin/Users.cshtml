@@ -330,7 +330,7 @@
             </div>
 
             <div class="modal-body">
-
+                @Html.AntiForgeryToken()
                 <form id="editUserForm">
 
                     <input type="hidden" id="editUserId" name="UserId" />
@@ -342,6 +342,9 @@
                                class="form-control"
                                id="editFullName"
                                name="FullName" />
+
+                        <span id="fullNameError"
+                              class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
@@ -350,6 +353,8 @@
                                class="form-control"
                                id="editEmail"
                                name="Email" />
+                        <span id="emailError"
+                              class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
@@ -358,6 +363,8 @@
                                class="form-control"
                                id="editPhoneNumber"
                                name="PhoneNumber" />
+                        <span id="phoneError"
+                              class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
@@ -436,18 +443,73 @@
 
         });
 
+
+
         $("#btnUpdateUser").click(function() {
 
+            // STEP 1: Purane validation errors clear
+            $("#fullNameError").text("");
+            $("#emailError").text("");
+            $("#phoneError").text("");
+
+            // STEP 2: Input values lena
+            var fullName = $("#editFullName").val().trim();
+            var email = $("#editEmail").val().trim();
+            var phoneNumber = $("#editPhoneNumber").val().trim();
+
+            var isValid = true;
+
+
+            // STEP 3: Full Name validation
+            if (fullName === "") {
+                $("#fullNameError").text("Full Name is required.");
+                isValid = false;
+            }
+
+
+            // STEP 4: Email validation
+            if (email === "") {
+                $("#emailError").text("Email is required.");
+                isValid = false;
+            }
+            else {
+                var emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+                if (!emailPattern.test(email)) {
+                    $("#emailError").text("Enter a valid email address.");
+                    isValid = false;
+                }
+            }
+
+
+            // STEP 5: Phone validation
+            if (phoneNumber === "") {
+                $("#phoneError").text("Phone Number is required.");
+                isValid = false;
+            }
+
+
+            // STEP 6: Validation fail hui to AJAX mat chalao
+            if (!isValid) {
+                return;
+            }
+
+
+            // STEP 7: Data prepare karo
             var formData = {
+                   __RequestVerificationToken: token,
                 UserId: $("#editUserId").val(),
-                FullName: $("#editFullName").val(),
-                Email: $("#editEmail").val(),
-                PhoneNumber: $("#editPhoneNumber").val(),
+                FullName: fullName,
+                Email: email,
+                PhoneNumber: phoneNumber,
                 FullAddress: $("#editFullAddress").val(),
                 RoleId: $("#editRoleId").val()
             };
 
+
+            // STEP 8: AJAX request
             $.ajax({
+
                 url: '@Url.Action("UpdateUser", "Admin")',
                 type: 'POST',
                 data: formData,
@@ -476,7 +538,9 @@
                 },
 
                 error: function() {
-                    toastr.error("Something went wrong while updating user.");
+                    toastr.error(
+                        "Something went wrong while updating user."
+                    );
                 }
             });
 
@@ -490,6 +554,7 @@
             var isActive = button.data("active");
 
             var actionText = isActive ? "deactivate" : "activate";
+            var token = $('input[name="__RequestVerificationToken"]').val();
 
             Swal.fire({
                 title: "Are you sure?",
@@ -506,6 +571,7 @@
                         url: '@Url.Action("ChangeUserStatus", "Admin")',
                         type: 'POST',
                         data: {
+                            __RequestVerificationToken: token,
                             id: userId
                         },
 

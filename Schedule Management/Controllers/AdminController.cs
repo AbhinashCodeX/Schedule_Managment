@@ -297,6 +297,7 @@ namespace Schedule_Management.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUserById(int id)
         {
+          
             var user = await _context.Users
                 .Where(x => x.UserId == id)
                 .Select(x => new
@@ -327,8 +328,17 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUser(EditUserViewModel model)
         {
+            if (!IsAdminLoggedIn(out _))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unauthorized access."
+                });
+            }
             if (!ModelState.IsValid)
             {
                 return Json(new
@@ -380,8 +390,17 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeUserStatus(int id)
         {
+            if (!IsAdminLoggedIn(out int adminId))
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unauthorized access."
+                });
+            }
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.UserId == id);
 
@@ -409,6 +428,23 @@ namespace Schedule_Management.Controllers
             });
         }
 
+        private bool IsAdminLoggedIn(out int adminId)
+        {
+            adminId = 0;
 
+            string? roleName =
+                HttpContext.Session.GetString("RoleName");
+
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (roleName != "Admin" || !userId.HasValue)
+            {
+                return false;
+            }
+
+            adminId = userId.Value;
+            return true;
+        }
     }
 }
