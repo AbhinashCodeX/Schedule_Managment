@@ -43,6 +43,115 @@
 
         <div class="card-body">
 
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <form asp-controller="Coach"
+                          asp-action="MyAvailability"
+                          method="get"
+                          class="row g-2 mb-4">
+
+                        <div class="col-md-3">
+
+                            <select name="activityTypeId"
+                                    class="form-select">
+
+                                <option value="">
+                                    All Activities
+                                </option>
+
+                                @foreach (var activity in ViewBag.ActivityTypes)
+                                {
+                                    <option value="@activity.ActivityTypeId"
+                                            selected="@(ViewBag.SelectedActivityTypeId == activity.ActivityTypeId)">
+                                        @activity.ActivityName
+                                    </option>
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <input type="date"
+                                   name="date"
+                                   value="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                                   class="form-control" />
+
+                        </div>
+
+
+                        <div class="col-md-2">
+
+                            <select name="status"
+                                    class="form-select">
+
+                                <option value="">
+                                    All Status
+                                </option>
+
+                                <option value="Active"
+                                        selected="@(ViewBag.Status == "Active")">
+                                    Active
+                                </option>
+
+                                <option value="Inactive"
+                                        selected="@(ViewBag.Status == "Inactive")">
+                                    Inactive
+                                </option>
+
+                            </select>
+
+                        </div>
+                        <div class="col-md-2">
+                            <select name="bookingStatus"
+                                    class="form-select">
+
+                                <option value="">
+                                    All Booking Status
+                                </option>
+
+                                <option value="Available"
+                                        selected="@(ViewBag.BookingStatus == "Available")">
+                                    Available
+                                </option>
+
+                                <option value="Booked"
+                                        selected="@(ViewBag.BookingStatus == "Booked")">
+                                    Booked
+                                </option>
+
+                                <option value="Unavailable"
+                                        selected="@(ViewBag.BookingStatus == "Unavailable")">
+                                    Unavailable
+                                </option>
+
+                            </select>
+                        </div>
+
+
+                        <div class="col-auto">
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Filter
+                            </button>
+                        </div>
+
+
+                        <div class="col-auto">
+                            <a asp-controller="Coach"
+                               asp-action="MyAvailability"
+                               class="btn btn-secondary">
+                                Reset
+                            </a>
+                        </div>
+
+                    </form>
+
+
             @if (!Model.Any())
             {
                 <div class="alert alert-info mb-0">
@@ -96,6 +205,12 @@
                                                 Booked
                                             </span>
                                         }
+                                        else if (!item.IsActive)
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Unavailable
+                                            </span>
+                                        }
                                         else
                                         {
                                             <span class="badge bg-info text-dark">
@@ -105,33 +220,33 @@
                                     </td>
 
                                     <td>
-                                        @if (item.IsActive)
-                                        {
-                                            <span class="badge bg-success">
-                                                Active
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-danger">
-                                                Inactive
-                                            </span>
-                                        }
+                                        <span id="availability-status-@item.AvailabilityId"
+                                              class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
+
+                                            @(item.IsActive ? "Active" : "Inactive")
+
+                                        </span>
                                     </td>
 
                                     <td>
                                         <button type="button"
-                                                class="btn btn-warning btn-sm">
+                                                class="btn btn-warning btn-sm btn-edit-availability"
+                                                data-id="@item.AvailabilityId">
                                             Edit
                                         </button>
 
                                         <button type="button"
-                                                class="btn btn-sm @(item.IsActive ? "btn-danger" : "btn-success")">
+                                                class="btn btn-sm @(item.IsActive ? "btn-danger" : "btn-success") btn-change-availability-status"
+                                                data-id="@item.AvailabilityId"
+                                                data-active="@item.IsActive.ToString().ToLower()">
 
-                                            @(item.IsActive
-                                                ? "Deactivate"
-                                                : "Activate")
+                                            @(item.IsActive ? "Deactivate" : "Activate")
+                                        </button>
 
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm btn-delete-availability"
+                                                data-id="@item.AvailabilityId">
+                                            Delete
                                         </button>
                                     </td>
 
@@ -474,5 +589,459 @@
 
         });
 
+        $(document).on("click", ".btn-edit-availability", function() {
+
+            var availabilityId = $(this).data("id");
+
+            $.ajax({
+                url: '@Url.Action("GetAvailabilityById", "Coach")',
+                type: 'GET',
+                data: {
+                    id: availabilityId
+                },
+
+                success: function(response) {
+
+                    if (response.success) {
+
+                        $("#editAvailabilityId")
+                            .val(response.data.availabilityId);
+
+                        $("#editActivityTypeId")
+                            .val(response.data.activityTypeId);
+
+                        $("#editAvailableDate")
+                            .val(response.data.availableDate);
+
+                        $("#editStartTime")
+                            .val(response.data.startTime);
+
+                        $("#editEndTime")
+                            .val(response.data.endTime);
+
+                        var modal =
+                            new bootstrap.Modal(
+                                document.getElementById(
+                                    "editAvailabilityModal"
+                                )
+                            );
+
+                        modal.show();
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+
+                error: function() {
+                    toastr.error(
+                        "Something went wrong while loading availability."
+                    );
+                }
+            });
+        });
+
+        $("#btnUpdateAvailability").click(function() {
+
+            $("#editActivityError").text("");
+            $("#editDateError").text("");
+            $("#editStartTimeError").text("");
+            $("#editEndTimeError").text("");
+
+            var availabilityId =
+                $("#editAvailabilityId").val();
+
+            var activityTypeId =
+                $("#editActivityTypeId").val();
+
+            var availableDate =
+                $("#editAvailableDate").val();
+
+            var startTime =
+                $("#editStartTime").val();
+
+            var endTime =
+                $("#editEndTime").val();
+
+            var isValid = true;
+
+            if (!activityTypeId) {
+                $("#editActivityError")
+                    .text("Please select an Activity Type.");
+
+                isValid = false;
+            }
+
+            if (!availableDate) {
+                $("#editDateError")
+                    .text("Available Date is required.");
+
+                isValid = false;
+            }
+
+            if (!startTime) {
+                $("#editStartTimeError")
+                    .text("Start Time is required.");
+
+                isValid = false;
+            }
+
+            if (!endTime) {
+                $("#editEndTimeError")
+                    .text("End Time is required.");
+
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            if (endTime <= startTime) {
+                $("#editEndTimeError")
+                    .text("End Time must be greater than Start Time.");
+
+                return;
+            }
+
+            var token =
+                $('input[name="__RequestVerificationToken"]').first().val();
+
+            $.ajax({
+                url: '@Url.Action("UpdateAvailability", "Coach")',
+                type: 'POST',
+
+                data: {
+                    __RequestVerificationToken: token,
+
+                    AvailabilityId: availabilityId,
+                    ActivityTypeId: activityTypeId,
+                    AvailableDate: availableDate,
+                    StartTime: startTime,
+                    EndTime: endTime
+                },
+
+                success: function(response) {
+
+                    if (response.success) {
+
+                        toastr.success(response.message);
+
+                        var modal =
+                            bootstrap.Modal.getInstance(
+                                document.getElementById(
+                                    "editAvailabilityModal"
+                                )
+                            );
+
+                        modal.hide();
+
+                        setTimeout(function() {
+                            location.reload();
+                        }, 700);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+
+                error: function() {
+                    toastr.error(
+                        "Something went wrong while updating availability."
+                    );
+                }
+            });
+        });
+
+        $(document).on("click", ".btn-change-availability-status", function() {
+
+            var button = $(this);
+
+            var availabilityId = button.data("id");
+            var isActive = button.data("active");
+
+            var actionText =
+                isActive ? "deactivate" : "activate";
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to " + actionText + " this availability?",
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonText:
+                    "Yes, " + actionText,
+
+                cancelButtonText:
+                    "Cancel"
+
+            }).then(function(result) {
+
+                if (result.isConfirmed) {
+
+                    var token =
+                        $('input[name="__RequestVerificationToken"]')
+                            .first()
+                            .val();
+
+                    $.ajax({
+
+                        url: '@Url.Action("ChangeAvailabilityStatus", "Coach")',
+
+                        type: 'POST',
+
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: availabilityId
+                        },
+
+                        success: function(response) {
+
+                            if (response.success) {
+
+                                toastr.success(response.message);
+
+                                var badge =
+                                    $("#availability-status-" + availabilityId);
+
+                                if (response.isActive) {
+
+                                    badge
+                                        .removeClass("bg-danger")
+                                        .addClass("bg-success")
+                                        .text("Active");
+
+                                    button
+                                        .removeClass("btn-success")
+                                        .addClass("btn-danger")
+                                        .text("Deactivate");
+
+                                    button.data("active", true);
+                                }
+                                else {
+
+                                    badge
+                                        .removeClass("bg-success")
+                                        .addClass("bg-danger")
+                                        .text("Inactive");
+
+                                    button
+                                        .removeClass("btn-danger")
+                                        .addClass("btn-success")
+                                        .text("Activate");
+
+                                    button.data("active", false);
+                                }
+                            }
+                            else {
+                                toastr.error(response.message);
+                            }
+
+                        },
+
+                        error: function() {
+
+                            toastr.error(
+                                "Something went wrong while changing availability status."
+                            );
+
+                        }
+
+                    });
+                }
+
+            });
+
+        });
+
+        $(document).on("click", ".btn-delete-availability", function() {
+
+            var button = $(this);
+            var availabilityId = button.data("id");
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This availability will be permanently deleted.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it",
+                cancelButtonText: "Cancel"
+            }).then(function(result) {
+
+                if (result.isConfirmed) {
+
+                    var token =
+                        $('input[name="__RequestVerificationToken"]')
+                            .first()
+                            .val();
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteAvailability", "Coach")',
+                        type: 'POST',
+
+                        data: {
+                            __RequestVerificationToken: token,
+                            id: availabilityId
+                        },
+
+                        success: function(response) {
+
+                            if (response.success) {
+
+                                toastr.success(response.message);
+
+                                // jis row ka button click hua tha
+                                button.closest("tr").fadeOut(400, function() {
+                                    $(this).remove();
+                                });
+                            }
+                            else {
+                                toastr.error(response.message);
+                            }
+                        },
+
+                        error: function() {
+                            toastr.error(
+                                "Something went wrong while deleting availability."
+                            );
+                        }
+                    });
+                }
+            });
+        });
+
     </script>
 }
+
+<!---Modal--->
+<div class="modal fade"
+     id="editAvailabilityModal"
+     tabindex="-1"
+     aria-labelledby="editAvailabilityModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editAvailabilityModalLabel">
+                    Edit Availability
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="editAvailabilityForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           id="editAvailabilityId"
+                           name="AvailabilityId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Activity Type
+                        </label>
+
+                        <select id="editActivityTypeId"
+                                name="ActivityTypeId"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Activity --
+                            </option>
+
+                            @foreach (var item in ViewBag.ActivityTypes)
+                            {
+                                <option value="@item.ActivityTypeId">
+                                    @item.ActivityName
+                                </option>
+                            }
+
+                        </select>
+
+                        <span id="editActivityError"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Available Date
+                        </label>
+
+                        <input type="date"
+                               id="editAvailableDate"
+                               name="AvailableDate"
+                               class="form-control" />
+
+                        <span id="editDateError"
+                              class="text-danger small">
+                        </span>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                Start Time
+                            </label>
+
+                            <input type="time"
+                                   id="editStartTime"
+                                   name="StartTime"
+                                   class="form-control" />
+
+                            <span id="editStartTimeError"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                End Time
+                            </label>
+
+                            <input type="time"
+                                   id="editEndTime"
+                                   name="EndTime"
+                                   class="form-control" />
+
+                            <span id="editEndTimeError"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="btnUpdateAvailability">
+                    Update Availability
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
