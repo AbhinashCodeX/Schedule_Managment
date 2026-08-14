@@ -1,0 +1,99 @@
+﻿@model Schedule_Management.ViewModels.CreateBookingViewModel
+
+@{
+    ViewData["Title"] = "Book Activity";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header">
+            <h4 class="mb-0">Book Activity</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form id="bookingForm">
+
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label">Activity Type</label>
+
+                    <select id="activityTypeId"
+                            class="form-select">
+
+                        <option value="">
+                            -- Select Activity --
+                        </option>
+
+                        @foreach (var activity in ViewBag.ActivityTypes)
+                        {
+                            <option value="@activity.ActivityTypeId">
+                                @activity.ActivityName
+                            </option>
+                        }
+
+                    </select>
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label">Coach</label>
+
+                    <select id="coachId"
+                            class="form-select"
+                            disabled>
+
+                        <option value="">
+                            -- Select Coach --
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label">Date</label>
+
+                    <select id="bookingDate"
+                            class="form-select"
+                            disabled>
+
+                        <option value="">
+                            -- Select Date --
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label">Time Slot</label>
+
+                    <select id="availabilityId"
+                            class="form-select"
+                            disabled>
+
+                        <option value="">
+                            -- Select Time Slot --
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="btnBookActivity">
+                    Book Now
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

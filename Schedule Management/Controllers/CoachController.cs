@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Schedule_Management.Models;
 using Schedule_Management.ViewModels;
+using Schedule_Management.Filters;
 
 namespace Schedule_Management.Controllers
 {
+    [RoleAuthorize("Coach")]
     public class CoachController : Controller
     {
         private readonly ScheduleManagementDbContext _context;
@@ -31,25 +33,14 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyAvailability(
-      int? activityTypeId,
-      DateOnly? date,
-      string? status, string? bookingStatus)
+        public async Task<IActionResult> MyAvailability(int? activityTypeId,DateOnly? date,string? status, string? bookingStatus, string? sortOrder, int page = 1)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             // Base Query
             var query = _context.CoachAvailabilities
-                .Where(x => x.CoachId == coachId.Value)
+                .Where(x => x.CoachId == coachId)
                 .Include(x => x.ActivityType)
                 .AsQueryable();
 
@@ -103,30 +94,79 @@ namespace Schedule_Management.Controllers
                 }
             }
             ViewBag.BookingStatus = bookingStatus;
+            ViewBag.SortOrder = sortOrder;
+            // Sorting
+            query = sortOrder switch
+            {
+                "date_desc" => query
+                    .OrderByDescending(x => x.AvailableDate)
+                    .ThenByDescending(x => x.StartTime),
 
+                "activity_asc" => query
+                    .OrderBy(x => x.ActivityType.ActivityName)
+                    .ThenBy(x => x.AvailableDate)
+                    .ThenBy(x => x.StartTime),
+
+                "activity_desc" => query
+                    .OrderByDescending(x => x.ActivityType.ActivityName)
+                    .ThenBy(x => x.AvailableDate)
+                    .ThenBy(x => x.StartTime),
+
+                _ => query
+                    .OrderBy(x => x.AvailableDate)
+                    .ThenBy(x => x.StartTime)
+            };
+            //Pagination Data 
+            int pageSize = 5;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages = (int)Math.Ceiling(
+                totalRecords / (double)pageSize
+            );
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages && totalPages > 0)
+            {
+                page = totalPages;
+            }
 
             // Final Query Execute
-            var availability = await query
-                .OrderBy(x => x.AvailableDate)
-                .ThenBy(x => x.StartTime)
-                .Select(x => new CoachAvailabilityViewModel
-                {
-                    AvailabilityId = x.AvailabilityId,
-                    ActivityTypeId = x.ActivityTypeId,
-                    ActivityName = x.ActivityType.ActivityName,
-                    AvailableDate = x.AvailableDate,
-                    StartTime = x.StartTime,
-                    EndTime = x.EndTime,
-                    IsBooked = x.IsBooked,
-                    IsActive = x.IsActive
-                })
-                .ToListAsync();
+              var availability = await query
+             .Skip((page - 1) * pageSize)
+             .Take(pageSize)
+             .Select(x => new CoachAvailabilityViewModel
+             {
+                 AvailabilityId = x.AvailabilityId,
+                 ActivityTypeId = x.ActivityTypeId,
+                 ActivityName = x.ActivityType.ActivityName,
+                 AvailableDate = x.AvailableDate,
+                 StartTime = x.StartTime,
+                 EndTime = x.EndTime,
+                 IsBooked = x.IsBooked,
+                 IsActive = x.IsActive
+             })
+             .ToListAsync();
 
 
             ViewBag.ActivityTypes = await _context.ActivityTypes
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.ActivityName)
                 .ToListAsync();
+
+            ViewBag.SelectedActivityTypeId = activityTypeId;
+            ViewBag.SelectedDate = date;
+            ViewBag.Status = status;
+            ViewBag.BookingStatus = bookingStatus;
+            ViewBag.SortOrder = sortOrder;
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
 
             return View(availability);
         }
@@ -136,20 +176,8 @@ namespace Schedule_Management.Controllers
         public async Task<IActionResult> CreateAvailability(
         CreateCoachAvailabilityViewModel model)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             if (!ModelState.IsValid)
             {
@@ -217,7 +245,7 @@ namespace Schedule_Management.Controllers
             {
                 bool slotExists = await _context.CoachAvailabilities
                     .AnyAsync(x =>
-                        x.CoachId == coachId.Value &&
+                        x.CoachId == coachId &&
                         x.AvailableDate == currentDate &&
                         x.IsActive &&
                         x.StartTime < model.EndTime &&
@@ -235,7 +263,7 @@ namespace Schedule_Management.Controllers
 
                 var availability = new CoachAvailability
                 {
-                    CoachId = coachId.Value,
+                    CoachId = coachId,
 
                     ActivityTypeId =
                         model.ActivityTypeId,
@@ -253,7 +281,7 @@ namespace Schedule_Management.Controllers
                     IsActive = true,
 
                     CreatedOn = DateTime.UtcNow,
-                    CreatedBy = coachId.Value
+                    CreatedBy = coachId
                 };
 
                 availabilityList.Add(availability);
@@ -295,25 +323,13 @@ namespace Schedule_Management.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailabilityById(int id)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             var availability = await _context.CoachAvailabilities
                 .Where(x =>
                     x.AvailabilityId == id &&
-                    x.CoachId == coachId.Value)
+                    x.CoachId == coachId)
                 .Select(x => new
                 {
                     x.AvailabilityId,
@@ -346,20 +362,8 @@ namespace Schedule_Management.Controllers
         public async Task<IActionResult> UpdateAvailability(
         EditCoachAvailabilityViewModel model)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             if (!ModelState.IsValid)
             {
@@ -373,7 +377,7 @@ namespace Schedule_Management.Controllers
             var availability = await _context.CoachAvailabilities
                 .FirstOrDefaultAsync(x =>
                     x.AvailabilityId == model.AvailabilityId &&
-                    x.CoachId == coachId.Value);
+                    x.CoachId == coachId);
 
             if (availability == null)
             {
@@ -431,7 +435,7 @@ namespace Schedule_Management.Controllers
             // Duplicate / overlap check
             bool overlapExists = await _context.CoachAvailabilities
                 .AnyAsync(x =>
-                    x.CoachId == coachId.Value &&
+                    x.CoachId == coachId &&
                     x.AvailabilityId != model.AvailabilityId &&
                     x.AvailableDate == model.AvailableDate &&
                     x.IsActive &&
@@ -453,7 +457,7 @@ namespace Schedule_Management.Controllers
             availability.EndTime = model.EndTime;
 
             availability.ModifiedOn = DateTime.UtcNow;
-            availability.ModifiedBy = coachId.Value;
+            availability.ModifiedBy = coachId;
 
             await _context.SaveChangesAsync();
 
@@ -468,25 +472,13 @@ namespace Schedule_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeAvailabilityStatus(int id)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             var availability = await _context.CoachAvailabilities
                 .FirstOrDefaultAsync(x =>
                     x.AvailabilityId == id &&
-                    x.CoachId == coachId.Value);
+                    x.CoachId == coachId);
 
             if (availability == null)
             {
@@ -508,7 +500,7 @@ namespace Schedule_Management.Controllers
 
             availability.IsActive = !availability.IsActive;
             availability.ModifiedOn = DateTime.UtcNow;
-            availability.ModifiedBy = coachId.Value;
+            availability.ModifiedBy = coachId;
 
             await _context.SaveChangesAsync();
 
@@ -526,25 +518,13 @@ namespace Schedule_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteAvailability(int id)
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            int? coachId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (role != "Coach" || !coachId.HasValue)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int coachId =
+                HttpContext.Session.GetInt32("UserId")!.Value;
 
             var availability = await _context.CoachAvailabilities
                 .FirstOrDefaultAsync(x =>
                     x.AvailabilityId == id &&
-                    x.CoachId == coachId.Value);
+                    x.CoachId == coachId);
 
             if (availability == null)
             {

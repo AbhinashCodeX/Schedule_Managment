@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Schedule_Management.Filters;
 using Schedule_Management.Models;
 using Schedule_Management.ViewModels;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Schedule_Management.Controllers
 {
+    [RoleAuthorize("Admin")]
     public class AdminController : Controller
     {
         private readonly ScheduleManagementDbContext _context;
@@ -24,17 +26,6 @@ namespace Schedule_Management.Controllers
          )]
         public IActionResult Dashboard()
         {
-            string? role =
-                HttpContext.Session.GetString("RoleName");
-
-            if (role != "Admin")
-            {
-                return RedirectToAction(
-                    "Login",
-                    "Account"
-                );
-            }
-
             return View();
         }
 
@@ -160,15 +151,6 @@ namespace Schedule_Management.Controllers
         string? sortOrder,
          int page = 1)
         {
-            string? roleName =
-                HttpContext.Session.GetString("RoleName");
-
-            if (roleName != "Admin")
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-
             // STEP 1: Query start
             var query = _context.Users
                 .Include(x => x.Role)
@@ -330,15 +312,7 @@ namespace Schedule_Management.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateUser(EditUserViewModel model)
-        {
-            if (!IsAdminLoggedIn(out _))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+        {    
             if (!ModelState.IsValid)
             {
                 return Json(new
@@ -393,14 +367,9 @@ namespace Schedule_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeUserStatus(int id)
         {
-            if (!IsAdminLoggedIn(out int adminId))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Unauthorized access."
-                });
-            }
+            int adminId =
+            HttpContext.Session.GetInt32("UserId")!.Value;
+
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.UserId == id);
 
@@ -428,23 +397,23 @@ namespace Schedule_Management.Controllers
             });
         }
 
-        private bool IsAdminLoggedIn(out int adminId)
-        {
-            adminId = 0;
+        //private bool IsAdminLoggedIn(out int adminId)
+        //{
+        //    adminId = 0;
 
-            string? roleName =
-                HttpContext.Session.GetString("RoleName");
+        //    string? roleName =
+        //        HttpContext.Session.GetString("RoleName");
 
-            int? userId =
-                HttpContext.Session.GetInt32("UserId");
+        //    int? userId =
+        //        HttpContext.Session.GetInt32("UserId");
 
-            if (roleName != "Admin" || !userId.HasValue)
-            {
-                return false;
-            }
+        //    if (roleName != "Admin" || !userId.HasValue)
+        //    {
+        //        return false;
+        //    }
 
-            adminId = userId.Value;
-            return true;
-        }
+        //    adminId = userId.Value;
+        //    return true;
+        //}
     }
 }
