@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Schedule_Management</RootNamespace>
+    <UserSecretsId>db986100-ad02-4e09-b74b-7623417332d4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
