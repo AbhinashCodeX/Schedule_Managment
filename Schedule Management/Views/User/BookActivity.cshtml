@@ -97,3 +97,315 @@
     </div>
 
 </div>
+@section Scripts
+{
+    <script>
+
+        $("#activityTypeId").change(function () {
+
+            var activityTypeId = $(this).val();
+
+            // Reset dependent dropdowns
+            $("#coachId")
+                .empty()
+                .append('<option value="">-- Select Coach --</option>')
+                .prop("disabled", true);
+
+            $("#bookingDate")
+                .empty()
+                .append('<option value="">-- Select Date --</option>')
+                .prop("disabled", true);
+
+            $("#availabilityId")
+                .empty()
+                .append('<option value="">-- Select Time Slot --</option>')
+                .prop("disabled", true);
+
+
+            if (!activityTypeId) {
+                return;
+            }
+
+
+            $.ajax({
+                url: '@Url.Action("GetCoachesByActivity", "User")',
+                type: 'GET',
+
+                data: {
+                    activityTypeId: activityTypeId
+                },
+
+                success: function (response) {
+
+                    if (response.length === 0) {
+
+                        toastr.info(
+                            "No coaches are currently available for this activity."
+                        );
+
+                        return;
+                    }
+
+
+                    $.each(response, function (index, coach) {
+
+                        $("#coachId").append(
+                            $('<option>', {
+                                value: coach.coachId,
+                                text: coach.coachName
+                            })
+                        );
+
+                    });
+
+
+                    $("#coachId")
+                        .prop("disabled", false);
+
+                },
+
+                error: function () {
+
+                    toastr.error(
+                        "Something went wrong while loading coaches."
+                    );
+
+                }
+            });
+
+        });
+
+        //Coach JQuery
+        $("#coachId").change(function() {
+
+            var activityTypeId = $("#activityTypeId").val();
+            var coachId = $(this).val();
+
+            // Reset Date
+            $("#bookingDate")
+                .empty()
+                .append('<option value="">-- Select Date --</option>')
+                .prop("disabled", true);
+
+            // Reset Time Slot
+            $("#availabilityId")
+                .empty()
+                .append('<option value="">-- Select Time Slot --</option>')
+                .prop("disabled", true);
+
+
+            if (!activityTypeId || !coachId) {
+                return;
+            }
+
+
+            $.ajax({
+                url: '@Url.Action("GetAvailableDates", "User")',
+                type: 'GET',
+
+                data: {
+                    activityTypeId: activityTypeId,
+                    coachId: coachId
+                },
+
+                success: function(response) {
+
+                    if (response.length === 0) {
+
+                        toastr.info(
+                            "No available dates found for this coach."
+                        );
+
+                        return;
+                    }
+
+
+                    $.each(response, function(index, date) {
+
+                        $("#bookingDate").append(
+                            $('<option>', {
+                                value: date.value,
+                                text: date.text
+                            })
+                        );
+
+                    });
+
+
+                    $("#bookingDate")
+                        .prop("disabled", false);
+                },
+
+                error: function() {
+
+                    toastr.error(
+                        "Something went wrong while loading available dates."
+                    );
+
+                }
+            });
+
+        });
+
+        //Booking JQuery
+        $("#bookingDate").change(function() {
+
+            var activityTypeId = $("#activityTypeId").val();
+            var coachId = $("#coachId").val();
+            var bookingDate = $(this).val();
+
+            $("#availabilityId")
+                .empty()
+                .append('<option value="">-- Select Time Slot --</option>')
+                .prop("disabled", true);
+
+            if (!activityTypeId || !coachId || !bookingDate) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetAvailableTimeSlots", "User")',
+                type: 'GET',
+
+                data: {
+                    activityTypeId: activityTypeId,
+                    coachId: coachId,
+                    date: bookingDate
+                },
+
+                success: function(response) {
+
+                    if (response.length === 0) {
+
+                        toastr.info(
+                            "No available time slots found for this date."
+                        );
+
+                        return;
+                    }
+
+                    $.each(response, function(index, slot) {
+
+                        $("#availabilityId").append(
+                            $('<option>', {
+                                value: slot.availabilityId,
+                                text: slot.startTime + " - " + slot.endTime
+                            })
+                        );
+
+                    });
+
+                    $("#availabilityId")
+                        .prop("disabled", false);
+                },
+
+                error: function() {
+
+                    toastr.error(
+                        "Something went wrong while loading time slots."
+                    );
+
+                }
+            });
+
+        });
+
+        //Booking Availability
+        $("#btnBookActivity").click(function() {
+
+            var activityTypeId = $("#activityTypeId").val();
+            var coachId = $("#coachId").val();
+            var bookingDate = $("#bookingDate").val();
+            var availabilityId = $("#availabilityId").val();
+
+            if (!activityTypeId) {
+                toastr.warning("Please select an Activity Type.");
+                return;
+            }
+
+            if (!coachId) {
+                toastr.warning("Please select a Coach.");
+                return;
+            }
+
+            if (!bookingDate) {
+                toastr.warning("Please select a Date.");
+                return;
+            }
+
+            if (!availabilityId) {
+                toastr.warning("Please select a Time Slot.");
+                return;
+            }
+
+            Swal.fire({
+                title: "Confirm Booking?",
+                text: "Do you want to book this activity slot?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Book Now",
+                cancelButtonText: "Cancel"
+            }).then(function(result) {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                var token =
+                    $('input[name="__RequestVerificationToken"]').val();
+
+                $("#btnBookActivity")
+                    .prop("disabled", true)
+                    .text("Booking...");
+
+                $.ajax({
+                    url: '@Url.Action("BookActivity", "User")',
+                    type: 'POST',
+
+                    data: {
+                        __RequestVerificationToken: token,
+                        availabilityId: availabilityId
+                    },
+
+                    success: function(response) {
+
+                        if (response.success) {
+
+                            toastr.success(response.message);
+
+                            $("#availabilityId")
+                                .empty()
+                                .append(
+                                    '<option value="">-- Select Time Slot --</option>'
+                                )
+                                .prop("disabled", true);
+
+                            $("#bookingDate")
+                                .val("");
+
+                        }
+                        else {
+                            toastr.error(response.message);
+                        }
+                    },
+
+                    error: function() {
+
+                        toastr.error(
+                            "Something went wrong while booking the activity."
+                        );
+                    },
+
+                    complete: function() {
+
+                        $("#btnBookActivity")
+                            .prop("disabled", false)
+                            .text("Book Now");
+                    }
+                });
+
+            });
+
+        });
+    </script>
+}
