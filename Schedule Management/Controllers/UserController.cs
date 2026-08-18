@@ -173,12 +173,12 @@ namespace Schedule_Management.Controllers
                     });
                 }
 
-                bool alreadyBooked = await _context.Bookings
-                    .AnyAsync(x =>
-                        x.UserId == userId.Value &&
-                        x.AvailabilityId == availabilityId &&
-                        x.IsActive &&
-                        x.BookingStatus == "Booked");
+                bool alreadyBooked = await _context.Bookings    
+                 .AnyAsync(x =>
+                     x.UserId == userId.Value &&
+                     x.AvailabilityId == availabilityId &&
+                     x.IsActive &&
+                     x.BookingStatus == "Confirmed");
 
                 if (alreadyBooked)
                 {
@@ -194,7 +194,7 @@ namespace Schedule_Management.Controllers
                     UserId = userId.Value,
                     AvailabilityId = availability.AvailabilityId,
 
-                    BookingStatus = "Booked",
+                    BookingStatus = "Confirmed",
                     BookedOn = DateTime.UtcNow,
 
                     IsActive = true,
