@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Schedule_Management.Models;
 using Microsoft.EntityFrameworkCore;
 using Schedule_Management.Filters;
+using Schedule_Management.Models;
+using Schedule_Management.ViewModels;
 
 namespace Schedule_Management.Controllers
 {
@@ -227,6 +228,150 @@ namespace Schedule_Management.Controllers
                 {
                     success = false,
                     message = "Something went wrong while booking the activity."
+                });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyBookings()
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var bookings = await _context.Bookings
+                .Where(x => x.UserId == userId.Value)
+                .Include(x => x.Availability)
+                    .ThenInclude(x => x.ActivityType)
+                .Include(x => x.Availability)
+                    .ThenInclude(x => x.Coach)
+                .OrderByDescending(x => x.BookedOn)
+                .Select(x => new MyBookingViewModel
+                {
+                    BookingId = x.BookingId,
+
+                    ActivityName =
+                        x.Availability.ActivityType.ActivityName,
+
+                    CoachName =
+                        x.Availability.Coach.FullName,
+
+                    BookingDate =
+                        x.Availability.AvailableDate,
+
+                    StartTime =
+                        x.Availability.StartTime,
+
+                    EndTime =
+                        x.Availability.EndTime,
+
+                    BookingStatus =
+                        x.BookingStatus,
+
+                    IsActive =
+                        x.IsActive
+                })
+                .ToListAsync();
+
+            return View(bookings);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelBooking(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var booking = await _context.Bookings
+                    .Include(x => x.Availability)
+                    .FirstOrDefaultAsync(x =>
+                        x.BookingId == id &&
+                        x.UserId == userId.Value);
+
+                if (booking == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Booking not found."
+                    });
+                }
+
+                if (booking.BookingStatus == "Cancelled")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "This booking is already cancelled."
+                    });
+                }
+
+                if (booking.BookingStatus == "Completed")
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Completed booking cannot be cancelled."
+                    });
+                }
+
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
+                if (booking.Availability.AvailableDate < today)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Past bookings cannot be cancelled."
+                    });
+                }
+
+                booking.BookingStatus = "Cancelled";
+                booking.IsActive = false;
+                booking.ModifiedOn = DateTime.UtcNow;
+                booking.ModifiedBy = userId.Value;
+
+                booking.Availability.IsBooked = false;
+                booking.Availability.ModifiedOn = DateTime.UtcNow;
+                booking.Availability.ModifiedBy = userId.Value;
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Booking cancelled successfully."
+                });
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Something went wrong while cancelling the booking."
                 });
             }
         }

@@ -1,0 +1,212 @@
+﻿@model IEnumerable<Schedule_Management.ViewModels.MyBookingViewModel>
+
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                My Bookings
+            </h2>
+
+            <p class="text-muted mb-0">
+                View your booked activities.
+            </p>
+        </div>
+
+        <a asp-controller="User"
+           asp-action="Dashboard"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    You have not booked any activities yet.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Activity</th>
+                                <th>Coach</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.ActivityName
+                                    </td>
+
+                                    <td>
+                                        @item.CoachName
+                                    </td>
+
+                                    <td>
+                                        @item.BookingDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @item.StartTime.ToString("HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @item.EndTime.ToString("HH:mm")
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.BookingStatus == "Confirmed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Confirmed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Completed")
+                                        {
+                                            <span class="badge bg-primary">
+                                                Completed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Cancelled")
+                                        {
+                                            <span class="badge bg-danger">
+                                                Cancelled
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @item.BookingStatus
+                                            </span>
+                                        }
+                                       
+                                            @if (item.BookingStatus == "Confirmed")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm btn-cancel-booking"
+                                                        data-id="@item.BookingId">
+                                                    Cancel
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No Action</span>
+                                            }
+                                        
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<form id="cancelBookingForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts
+{
+    <script>
+
+        $(document).on("click", ".btn-cancel-booking", function () {
+
+            var button = $(this);
+            var bookingId = button.data("id");
+
+            Swal.fire({
+                title: "Cancel Booking?",
+                text: "This slot will become available again.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Cancel Booking",
+                cancelButtonText: "No"
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                var token =
+                    $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("CancelBooking", "User")',
+                    type: 'POST',
+
+                    data: {
+                        __RequestVerificationToken: token,
+                        id: bookingId
+                    },
+
+                    success: function (response) {
+
+                        if (response.success) {
+
+                            toastr.success(response.message);
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 700);
+
+                        }
+                        else {
+                            toastr.error(response.message);
+                        }
+                    },
+
+                    error: function () {
+
+                        toastr.error(
+                            "Something went wrong while cancelling booking."
+                        );
+                    }
+
+                });
+
+            });
+
+        });
+
+    </script>
+}
+
