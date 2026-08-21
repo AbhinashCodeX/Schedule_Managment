@@ -232,55 +232,6 @@ namespace Schedule_Management.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> MyBookings()
-        {
-            int? userId =
-                HttpContext.Session.GetInt32("UserId");
-
-            if (!userId.HasValue)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            var bookings = await _context.Bookings
-                .Where(x => x.UserId == userId.Value)
-                .Include(x => x.Availability)
-                    .ThenInclude(x => x.ActivityType)
-                .Include(x => x.Availability)
-                    .ThenInclude(x => x.Coach)
-                .OrderByDescending(x => x.BookedOn)
-                .Select(x => new MyBookingViewModel
-                {
-                    BookingId = x.BookingId,
-
-                    ActivityName =
-                        x.Availability.ActivityType.ActivityName,
-
-                    CoachName =
-                        x.Availability.Coach.FullName,
-
-                    BookingDate =
-                        x.Availability.AvailableDate,
-
-                    StartTime =
-                        x.Availability.StartTime,
-
-                    EndTime =
-                        x.Availability.EndTime,
-
-                    BookingStatus =
-                        x.BookingStatus,
-
-                    IsActive =
-                        x.IsActive
-                })
-                .ToListAsync();
-
-            return View(bookings);
-        }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CancelBooking(int id)
@@ -374,6 +325,65 @@ namespace Schedule_Management.Controllers
                     message = "Something went wrong while cancelling the booking."
                 });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyBookings(string? status)
+        {
+            int? userId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (!userId.HasValue)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var query = _context.Bookings
+                .Where(x => x.UserId == userId.Value)
+                .Include(x => x.Availability)
+                    .ThenInclude(x => x.ActivityType)
+                .Include(x => x.Availability)
+                    .ThenInclude(x => x.Coach)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(x =>
+                    x.BookingStatus == status);
+            }
+
+            var bookings = await query
+                .OrderByDescending(x => x.BookedOn)
+                .Select(x => new MyBookingViewModel
+                {
+                    BookingId = x.BookingId,
+
+                    ActivityName =
+                        x.Availability.ActivityType.ActivityName,
+
+                    CoachName =
+                        x.Availability.Coach.FullName,
+
+                    BookingDate =
+                        x.Availability.AvailableDate,
+
+                    StartTime =
+                        x.Availability.StartTime,
+
+                    EndTime =
+                        x.Availability.EndTime,
+
+                    BookingStatus =
+                        x.BookingStatus,
+
+                    IsActive =
+                        x.IsActive
+                })
+                .ToListAsync();
+
+            ViewBag.Status = status;
+
+            return View(bookings);
         }
     }
 }

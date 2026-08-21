@@ -24,6 +24,57 @@
             Back to Dashboard
         </a>
 
+       @*Booking Filter *@
+        <form asp-controller="User"
+              asp-action="MyBookings"
+              method="get"
+              class="row g-2 mb-3">
+
+            <div class="col-md-3">
+
+                <select name="status"
+                        class="form-select">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Confirmed"
+                            selected="@(ViewBag.Status == "Confirmed")">
+                        Confirmed
+                    </option>
+
+                    <option value="Completed"
+                            selected="@(ViewBag.Status == "Completed")">
+                        Completed
+                    </option>
+
+                    <option value="Cancelled"
+                            selected="@(ViewBag.Status == "Cancelled")">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="col-auto">
+                <button type="submit"
+                        class="btn btn-primary">
+                    Filter
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a asp-controller="User"
+                   asp-action="MyBookings"
+                   class="btn btn-secondary">
+                    Reset
+                </a>
+            </div>
+
+        </form>
+
     </div>
 
 
@@ -81,6 +132,7 @@
                                         @item.EndTime.ToString("HH:mm")
                                     </td>
 
+                                    <!-- Status -->
                                     <td>
 
                                         @if (item.BookingStatus == "Confirmed")
@@ -107,20 +159,26 @@
                                                 @item.BookingStatus
                                             </span>
                                         }
-                                       
-                                            @if (item.BookingStatus == "Confirmed")
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-danger btn-sm btn-cancel-booking"
-                                                        data-id="@item.BookingId">
-                                                    Cancel
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">No Action</span>
-                                            }
-                                        
+
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td>
+
+                                        @if (item.BookingStatus == "Confirmed")
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm btn-cancel-booking"
+                                                    data-id="@item.BookingId">
+                                                Cancel
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                No Action
+                                            </span>
+                                        }
 
                                     </td>
 
