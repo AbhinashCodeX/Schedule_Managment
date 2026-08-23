@@ -328,7 +328,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyBookings(string? status)
+        public async Task<IActionResult> MyBookings(string? status, DateOnly? date,string? bookingPeriod)
         {
             int? userId =
                 HttpContext.Session.GetInt32("UserId");
@@ -350,6 +350,26 @@ namespace Schedule_Management.Controllers
             {
                 query = query.Where(x =>
                     x.BookingStatus == status);
+            }
+            if (date.HasValue)
+            {
+                query = query.Where(x =>
+                    x.Availability.AvailableDate == date.Value);
+            }
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            if (!string.IsNullOrWhiteSpace(bookingPeriod))
+            {
+                if (bookingPeriod == "Upcoming")
+                {
+                    query = query.Where(x =>
+                        x.Availability.AvailableDate >= today);
+                }
+                else if (bookingPeriod == "Past")
+                {
+                    query = query.Where(x =>
+                        x.Availability.AvailableDate < today);
+                }
             }
 
             var bookings = await query
@@ -382,6 +402,8 @@ namespace Schedule_Management.Controllers
                 .ToListAsync();
 
             ViewBag.Status = status;
+            ViewBag.SelectedDate = date;
+            ViewBag.BookingPeriod = bookingPeriod;
 
             return View(bookings);
         }

@@ -58,6 +58,41 @@
 
             </div>
 
+            <!-- Date -->
+            <div class="col-md-3">
+
+                <input type="date"
+                       name="date"
+                       value="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                       class="form-control" />
+
+            </div>
+
+            
+            <!-- Upcoming / Past -->
+            <div class="col-md-3">
+
+                <select name="bookingPeriod"
+                        class="form-select">
+
+                    <option value="">
+                        All Bookings
+                    </option>
+
+                    <option value="Upcoming"
+                            selected="@(ViewBag.BookingPeriod == "Upcoming")">
+                        Upcoming
+                    </option>
+
+                    <option value="Past"
+                            selected="@(ViewBag.BookingPeriod == "Past")">
+                        Past
+                    </option>
+
+                </select>
+
+            </div>
+
             <div class="col-auto">
                 <button type="submit"
                         class="btn btn-primary">
