@@ -1,8 +1,802 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "Home";
+
+    int? userId = Context.Session.GetInt32("UserId");
+    string? fullName = Context.Session.GetString("FullName");
+    string? roleName = Context.Session.GetString("RoleName");
+
+    string themeClass = roleName switch
+    {
+        "Admin" => "admin-theme",
+        "Coach" => "coach-theme",
+        "User" => "user-theme",
+        _ => "guest-theme"
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+
+    body {
+        min-height: 100vh;
+    }
+
+    /* ================================
+           COMMON HOME DESIGN
+           ================================ */
+
+    .home-page {
+        padding: 35px 10px 60px;
+    }
+
+    .home-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        padding: 55px 45px;
+        color: white;
+        margin-bottom: 35px;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, 0.15);
+    }
+
+        .home-hero::before {
+            content: "";
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            right: -70px;
+            top: -90px;
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .home-hero::after {
+            content: "";
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            right: 140px;
+            bottom: -90px;
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 720px;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 15px;
+        border-radius: 30px;
+        background: rgba(255,255,255,.18);
+        backdrop-filter: blur(10px);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .home-hero h1 {
+        font-size: clamp(32px, 5vw, 52px);
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .home-hero p {
+        font-size: 17px;
+        opacity: .92;
+        max-width: 650px;
+        margin-bottom: 25px;
+    }
+
+    .hero-btn {
+        background: white;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 700;
+        transition: .25s ease;
+    }
+
+        .hero-btn:hover {
+            transform: translateY(-3px);
+        }
+
+    /* ================================
+           CARDS
+           ================================ */
+
+    .home-card {
+        height: 100%;
+        border-radius: 22px;
+        padding: 27px;
+        background: rgba(255,255,255,.92);
+        border: 1px solid rgba(255,255,255,.8);
+        box-shadow: 0 14px 35px rgba(15,23,42,.08);
+        transition: .3s ease;
+    }
+
+        .home-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 22px 45px rgba(15,23,42,.14);
+        }
+
+    .home-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 27px;
+        margin-bottom: 20px;
+    }
+
+    .home-card h5 {
+        font-weight: 750;
+        color: #1e293b;
+    }
+
+    .home-card p {
+        color: #64748b;
+        min-height: 48px;
+    }
+
+    .card-action {
+        display: inline-block;
+        padding: 9px 17px;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+        font-weight: 650;
+        transition: .25s;
+    }
+
+        .card-action:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+
+    /* ================================
+           ADMIN THEME
+           ================================ */
+
+    body:has(.admin-theme) {
+        background: radial-gradient(circle at top left, rgba(79,70,229,.18), transparent 30%), radial-gradient(circle at bottom right, rgba(14,165,233,.16), transparent 30%), linear-gradient(135deg,#eef2ff,#f8fafc);
+    }
+
+    .admin-theme .home-hero {
+        background: linear-gradient(135deg,#4f46e5,#2563eb,#0ea5e9);
+    }
+
+    .admin-theme .home-icon,
+    .admin-theme .card-action {
+        background: linear-gradient(135deg,#4f46e5,#2563eb);
+    }
+
+    .admin-theme .hero-btn {
+        color: #4f46e5;
+    }
+
+
+    /* ================================
+           COACH THEME
+           ================================ */
+
+    body:has(.coach-theme) {
+        background: radial-gradient(circle at top left, rgba(14,165,233,.18), transparent 30%), radial-gradient(circle at bottom right, rgba(34,197,94,.14), transparent 30%), linear-gradient(135deg,#eff6ff,#f8fafc);
+    }
+
+    .coach-theme .home-hero {
+        background: linear-gradient(135deg,#0284c7,#0ea5e9,#14b8a6);
+    }
+
+    .coach-theme .home-icon,
+    .coach-theme .card-action {
+        background: linear-gradient(135deg,#0284c7,#14b8a6);
+    }
+
+    .coach-theme .hero-btn {
+        color: #0284c7;
+    }
+
+
+    /* ================================
+           USER THEME
+           ================================ */
+
+    body:has(.user-theme) {
+        background: radial-gradient(circle at top left, rgba(168,85,247,.16), transparent 30%), radial-gradient(circle at bottom right, rgba(236,72,153,.13), transparent 30%), linear-gradient(135deg,#faf5ff,#f8fafc);
+    }
+
+    .user-theme .home-hero {
+        background: linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);
+    }
+
+    .user-theme .home-icon,
+    .user-theme .card-action {
+        background: linear-gradient(135deg,#7c3aed,#ec4899);
+    }
+
+    .user-theme .hero-btn {
+        color: #7c3aed;
+    }
+
+
+    /* ================================
+           GUEST
+           ================================ */
+
+    .guest-theme .home-hero {
+        background: linear-gradient(135deg,#2563eb,#4f46e5);
+    }
+
+    .guest-theme .home-icon,
+    .guest-theme .card-action {
+        background: linear-gradient(135deg,#2563eb,#4f46e5);
+    }
+
+    .guest-theme .hero-btn {
+        color: #2563eb;
+    }
+
+</style>
+
+
+<div class="container home-page @themeClass">
+
+
+    @* =================================================
+       ADMIN HOME
+       ================================================= *@
+
+    @if (roleName == "Admin")
+    {
+        <div class="home-hero">
+
+            <div class="hero-content">
+
+                <div class="role-badge">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    Administrator
+
+                </div>
+
+
+                <h1>
+                    Welcome back,
+                    @fullName 👋
+                </h1>
+
+
+                <p>
+                    Manage your Schedule Management system,
+                    users, coaches, activities and locations
+                    from one place.
+                </p>
+
+
+                <a asp-controller="Admin"
+                   asp-action="Dashboard"
+                   class="hero-btn">
+
+                    <i class="bi bi-speedometer2 me-1"></i>
+
+                    Open Admin Dashboard
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+
+                    <h5>
+                        Manage Users
+                    </h5>
+
+                    <p>
+                        View and manage registered users
+                        and coaches.
+                    </p>
+
+                    <a asp-controller="Admin"
+                       asp-action="Users"
+                       class="card-action">
+
+                        Manage Users
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+
+                    <h5>
+                        Activity Types
+                    </h5>
+
+                    <p>
+                        Create, edit and manage activities
+                        available in the system.
+                    </p>
+
+                    <a asp-controller="ActivityType"
+                       asp-action="Index"
+                       class="card-action">
+
+                        View Activities
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+
+                    <h5>
+                        Admin Dashboard
+                    </h5>
+
+                    <p>
+                        Access all administrative controls
+                        and management options.
+                    </p>
+
+                    <a asp-controller="Admin"
+                       asp-action="Dashboard"
+                       class="card-action">
+
+                        Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+
+    @* =================================================
+       COACH HOME
+       ================================================= *@
+
+    else if (roleName == "Coach")
+    {
+
+        <div class="home-hero">
+
+            <div class="hero-content">
+
+                <div class="role-badge">
+
+                    <i class="bi bi-person-workspace"></i>
+
+                    Coach
+
+                </div>
+
+
+                <h1>
+                    Hello Coach,
+                    @fullName 👋
+                </h1>
+
+
+                <p>
+                    Manage your availability, activity
+                    schedules and upcoming user bookings
+                    easily.
+                </p>
+
+
+                <a asp-controller="Coach"
+                   asp-action="MyAvailability"
+                   class="hero-btn">
+
+                    <i class="bi bi-calendar-week me-1"></i>
+
+                    Manage Availability
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-calendar-plus-fill"></i>
+                    </div>
+
+                    <h5>
+                        Add Availability
+                    </h5>
+
+                    <p>
+                        Add dates and time ranges when
+                        you are available.
+                    </p>
+
+                    <a asp-controller="Coach"
+                       asp-action="MyAvailability"
+                       class="card-action">
+
+                        Add Availability
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-calendar-week-fill"></i>
+                    </div>
+
+                    <h5>
+                        My Schedule
+                    </h5>
+
+                    <p>
+                        View and manage all your available
+                        activity schedules.
+                    </p>
+
+                    <a asp-controller="Coach"
+                       asp-action="MyAvailability"
+                       class="card-action">
+
+                        My Availability
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+
+                    <h5>
+                        Coach Dashboard
+                    </h5>
+
+                    <p>
+                        Access your complete coach
+                        management dashboard.
+                    </p>
+
+                    <a asp-controller="Coach"
+                       asp-action="Dashboard"
+                       class="card-action">
+
+                        Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+
+    @* =================================================
+       USER HOME
+       ================================================= *@
+
+    else if (roleName == "User")
+    {
+
+        <div class="home-hero">
+
+            <div class="hero-content">
+
+                <div class="role-badge">
+
+                    <i class="bi bi-person-heart"></i>
+
+                    Member
+
+                </div>
+
+
+                <h1>
+                    Hi @fullName! 👋
+                </h1>
+
+
+                <p>
+                    Discover activities, select your coach,
+                    choose available schedules and manage
+                    your bookings.
+                </p>
+
+
+                <a asp-controller="User"
+                   asp-action="BookActivity"
+                   class="hero-btn">
+
+                    <i class="bi bi-calendar-check me-1"></i>
+
+                    Book an Activity
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+
+                    <h5>
+                        Book Activity
+                    </h5>
+
+                    <p>
+                        Select activity, coach, date
+                        and available time.
+                    </p>
+
+                    <a asp-controller="User"
+                       asp-action="BookActivity"
+                       class="card-action">
+
+                        Book Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-journal-check"></i>
+                    </div>
+
+                    <h5>
+                        My Bookings
+                    </h5>
+
+                    <p>
+                        View your upcoming and previous
+                        activity bookings.
+                    </p>
+
+                    <a asp-controller="User"
+                       asp-action="MyBookings"
+                       class="card-action">
+
+                        View Bookings
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+
+                    <h5>
+                        My Dashboard
+                    </h5>
+
+                    <p>
+                        Access your personal Schedule
+                        Management dashboard.
+                    </p>
+
+                    <a asp-controller="User"
+                       asp-action="Dashboard"
+                       class="card-action">
+
+                        Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+
+    @* =================================================
+       NOT LOGGED IN
+       ================================================= *@
+
+    else
+    {
+
+        <div class="home-hero">
+
+            <div class="hero-content">
+
+                <div class="role-badge">
+
+                    <i class="bi bi-calendar-check"></i>
+
+                    Schedule Management
+
+                </div>
+
+
+                <h1>
+                    Plan. Book. Manage.
+                </h1>
+
+
+                <p>
+                    A simple platform for users to book
+                    activities, coaches to manage schedules
+                    and administrators to manage the system.
+                </p>
+
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="hero-btn">
+
+                    <i class="bi bi-box-arrow-in-right me-1"></i>
+
+                    Login to Continue
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+
+                    <h5>For Users</h5>
+
+                    <p>
+                        Find coaches and book available
+                        activity schedules.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-person-workspace"></i>
+                    </div>
+
+                    <h5>For Coaches</h5>
+
+                    <p>
+                        Create availability and manage
+                        your activity schedules.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="home-card">
+
+                    <div class="home-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <h5>For Admin</h5>
+
+                    <p>
+                        Manage users, activities and
+                        overall platform operations.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
 </div>
