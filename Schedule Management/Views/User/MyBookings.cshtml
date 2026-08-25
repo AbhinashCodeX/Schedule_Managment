@@ -93,6 +93,36 @@
 
             </div>
 
+            <!-- Sorting -->
+            <div class="col-md-3">
+
+                <select name="sortOrder"
+                        class="form-select">
+
+                    <option value=""
+                            selected="@(string.IsNullOrEmpty(ViewBag.SortOrder))">
+                        Date Descending
+                    </option>
+
+                    <option value="date_asc"
+                            selected="@(ViewBag.SortOrder == "date_asc")">
+                        Date Ascending
+                    </option>
+
+                    <option value="activity_asc"
+                            selected="@(ViewBag.SortOrder == "activity_asc")">
+                        Activity A-Z
+                    </option>
+
+                    <option value="coach_asc"
+                            selected="@(ViewBag.SortOrder == "coach_asc")">
+                        Coach A-Z
+                    </option>
+
+                </select>
+
+            </div>
+
             <div class="col-auto">
                 <button type="submit"
                         class="btn btn-primary">

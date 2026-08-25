@@ -328,7 +328,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyBookings(string? status, DateOnly? date,string? bookingPeriod)
+        public async Task<IActionResult> MyBookings(string? status, DateOnly? date,string? bookingPeriod, string? sortOrder)
         {
             int? userId =
                 HttpContext.Session.GetInt32("UserId");
@@ -371,6 +371,24 @@ namespace Schedule_Management.Controllers
                         x.Availability.AvailableDate < today);
                 }
             }
+            query = sortOrder switch
+            {
+                "date_asc" => query
+                    .OrderBy(x => x.Availability.AvailableDate)
+                    .ThenBy(x => x.Availability.StartTime),
+
+                "activity_asc" => query
+                    .OrderBy(x => x.Availability.ActivityType.ActivityName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                "coach_asc" => query
+                    .OrderBy(x => x.Availability.Coach.FullName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                _ => query
+                    .OrderByDescending(x => x.Availability.AvailableDate)
+                    .ThenByDescending(x => x.Availability.StartTime)
+            };
 
             var bookings = await query
                 .OrderByDescending(x => x.BookedOn)
@@ -404,7 +422,7 @@ namespace Schedule_Management.Controllers
             ViewBag.Status = status;
             ViewBag.SelectedDate = date;
             ViewBag.BookingPeriod = bookingPeriod;
-
+            ViewBag.SortOrder = sortOrder;
             return View(bookings);
         }
     }
