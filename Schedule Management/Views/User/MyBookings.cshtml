@@ -261,6 +261,36 @@
 
     </div>
 
+
+@* Pagination *@
+@if (ViewBag.TotalPages > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                    <a class="page-link"
+                       asp-controller="User"
+                       asp-action="MyBookings"
+                       asp-route-page="@i"
+                       asp-route-status="@ViewBag.Status"
+                       asp-route-date="@ViewBag.SelectedDate"
+                       asp-route-bookingPeriod="@ViewBag.BookingPeriod"
+                       asp-route-sortOrder="@ViewBag.SortOrder">
+
+                        @i
+
+                    </a>
+
+                </li>
+            }
+
+        </ul>
+    </nav>
+}
 </div>
 
 <form id="cancelBookingForm" style="display:none;">

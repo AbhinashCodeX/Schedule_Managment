@@ -37,7 +37,7 @@
 </head>
 
 
-<body>
+@* <body>
 
     <!-- Navbar -->
     <header>
@@ -381,6 +381,195 @@
 
 
     <!-- Page Specific JavaScript -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body> *@
+
+<body>
+
+    @{
+        int? userId = Context.Session.GetInt32("UserId");
+        string? roleName = Context.Session.GetString("RoleName");
+        string? fullName = Context.Session.GetString("FullName");
+    }
+
+    @if (userId != null)
+    {
+        <div class="app-wrapper">
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+
+                <div class="sidebar-brand">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Schedule Management</span>
+                </div>
+
+                <ul class="sidebar-menu">
+
+                    <li>
+                        <a asp-controller="Home"
+                           asp-action="Index">
+                            <i class="bi bi-house"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+
+
+                    @if (roleName == "Admin")
+                    {
+                        <li>
+                            <a asp-controller="Admin"
+                               asp-action="Dashboard">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Admin"
+                               asp-action="UsersList">
+                                <i class="bi bi-people"></i>
+                                <span>Users & Coaches</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Admin"
+                               asp-action="ActivityTypes">
+                                <i class="bi bi-list-check"></i>
+                                <span>Activity Types</span>
+                            </a>
+                        </li>
+                    }
+
+
+                    @if (roleName == "Coach")
+                    {
+                        <li>
+                            <a asp-controller="Coach"
+                               asp-action="Dashboard">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="Coach"
+                               asp-action="MyAvailability">
+                                <i class="bi bi-calendar-week"></i>
+                                <span>My Availability</span>
+                            </a>
+                        </li>
+                    }
+
+
+                    @if (roleName == "User")
+                    {
+                        <li>
+                            <a asp-controller="User"
+                               asp-action="Dashboard">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="User"
+                               asp-action="BookActivity">
+                                <i class="bi bi-calendar-plus"></i>
+                                <span>Book Activity</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a asp-controller="User"
+                               asp-action="MyBookings">
+                                <i class="bi bi-journal-check"></i>
+                                <span>My Bookings</span>
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+
+            </aside>
+
+
+            <!-- Right Side -->
+            <div class="main-area">
+
+                <!-- Topbar -->
+                <header class="topbar">
+
+                    <div>
+                        <span class="fw-semibold">
+                            @roleName Panel
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <span>
+                            <i class="bi bi-person-circle"></i>
+                            Welcome,
+                            <strong>@fullName</strong>
+                        </span>
+
+                        <form asp-controller="Account"
+                              asp-action="Logout"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="btn btn-link text-danger text-decoration-none p-0">
+
+                                <i class="bi bi-box-arrow-right"></i>
+                                Logout
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </header>
+
+
+                <!-- Main Page -->
+                <main class="page-content">
+
+                    @RenderBody()
+
+                </main>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- Login / Register pages -->
+        <main>
+            @RenderBody()
+        </main>
+    }
+
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

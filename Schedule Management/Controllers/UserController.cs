@@ -328,7 +328,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyBookings(string? status, DateOnly? date,string? bookingPeriod, string? sortOrder)
+        public async Task<IActionResult> MyBookings(string? status, DateOnly? date,string? bookingPeriod, string? sortOrder, int page = 1)
         {
             int? userId =
                 HttpContext.Session.GetInt32("UserId");
@@ -390,8 +390,28 @@ namespace Schedule_Management.Controllers
                     .ThenByDescending(x => x.Availability.StartTime)
             };
 
+            //pagination logic can be added here if needed, for now we will fetch all records
+            int pageSize = 5;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages = (int)Math.Ceiling(
+                totalRecords / (double)pageSize
+            );
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages && totalPages > 0)
+            {
+                page = totalPages;
+            }
+
             var bookings = await query
-                .OrderByDescending(x => x.BookedOn)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(x => new MyBookingViewModel
                 {
                     BookingId = x.BookingId,
@@ -423,6 +443,13 @@ namespace Schedule_Management.Controllers
             ViewBag.SelectedDate = date;
             ViewBag.BookingPeriod = bookingPeriod;
             ViewBag.SortOrder = sortOrder;
+
+
+            //pagination view bag
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
             return View(bookings);
         }
     }
