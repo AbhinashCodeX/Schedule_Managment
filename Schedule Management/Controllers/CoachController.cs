@@ -556,7 +556,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyAppointments(string? status, DateOnly? date, string? appointmentPeriod, string? sortOrder)
+        public async Task<IActionResult> MyAppointments(string? status, DateOnly? date, string? appointmentPeriod, string? sortOrder ,int page = 1)
         {
             int? coachId =
                 HttpContext.Session.GetInt32("UserId");
@@ -602,6 +602,7 @@ namespace Schedule_Management.Controllers
                         x.Availability.AvailableDate < today);
                 }
             }
+
             query = sortOrder switch
             {
                 "date_asc" => query
@@ -620,8 +621,28 @@ namespace Schedule_Management.Controllers
                     .OrderByDescending(x => x.Availability.AvailableDate)
                     .ThenByDescending(x => x.Availability.StartTime)
             };
+
+
+            int pageSize = 5;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages && totalPages > 0)
+            {
+                page = totalPages;
+            }
             // Projection
             var appointments = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(x => new CoachAppointmentViewModel
                 {
                     BookingId = x.BookingId,
@@ -650,6 +671,10 @@ namespace Schedule_Management.Controllers
             ViewBag.SelectedDate = date;
             ViewBag.AppointmentPeriod = appointmentPeriod;
             ViewBag.SortOrder = sortOrder;
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
             return View(appointments);
         }
 

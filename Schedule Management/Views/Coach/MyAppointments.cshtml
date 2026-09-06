@@ -276,6 +276,61 @@
                     </table>
 
                 </div>
+
+                <!-- PAGINATION YAHAN -->
+                @if (ViewBag.TotalPages > 1)
+                {
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center">
+
+                            <!-- PREVIOUS -->
+                            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-controller="Coach"
+                                   asp-action="MyAppointments"
+                                   asp-route-page="@(ViewBag.CurrentPage - 1)"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-date="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-appointmentPeriod="@ViewBag.AppointmentPeriod"
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- PAGE NUMBERS -->
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                    <a class="page-link"
+                                       asp-controller="Coach"
+                                       asp-action="MyAppointments"
+                                       asp-route-page="@i"
+                                       asp-route-status="@ViewBag.Status"
+                                       asp-route-date="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                                       asp-route-appointmentPeriod="@ViewBag.AppointmentPeriod"
+                                       asp-route-sortOrder="@ViewBag.SortOrder">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- NEXT -->
+                            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-controller="Coach"
+                                   asp-action="MyAppointments"
+                                   asp-route-page="@(ViewBag.CurrentPage + 1)"
+                                   asp-route-status="@ViewBag.Status"
+                                   asp-route-date="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                                   asp-route-appointmentPeriod="@ViewBag.AppointmentPeriod"
+                                   asp-route-sortOrder="@ViewBag.SortOrder">
+                                    Next
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                }
             }
 
         </div>
