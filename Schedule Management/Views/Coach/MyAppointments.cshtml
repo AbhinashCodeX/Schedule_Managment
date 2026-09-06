@@ -112,6 +112,39 @@
 
                 </div>
 
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Sort By
+                    </label>
+
+                    <select name="sortOrder"
+                            class="form-select">
+
+                        <option value=""
+                                selected="@(string.IsNullOrEmpty(ViewBag.SortOrder))">
+                            Date - Newest First
+                        </option>
+
+                        <option value="date_asc"
+                                selected="@(ViewBag.SortOrder == "date_asc")">
+                            Date - Oldest First
+                        </option>
+
+                        <option value="activity_asc"
+                                selected="@(ViewBag.SortOrder == "activity_asc")">
+                            Activity - A to Z
+                        </option>
+
+                        <option value="user_asc"
+                                selected="@(ViewBag.SortOrder == "user_asc")">
+                            User - A to Z
+                        </option>
+
+                    </select>
+
+                </div>
+
                 <!-- FILTER BUTTON -->
                 <div class="col-auto">
 

@@ -556,7 +556,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> MyAppointments(string? status, DateOnly? date, string? appointmentPeriod)
+        public async Task<IActionResult> MyAppointments(string? status, DateOnly? date, string? appointmentPeriod, string? sortOrder)
         {
             int? coachId =
                 HttpContext.Session.GetInt32("UserId");
@@ -602,13 +602,26 @@ namespace Schedule_Management.Controllers
                         x.Availability.AvailableDate < today);
                 }
             }
+            query = sortOrder switch
+            {
+                "date_asc" => query
+                    .OrderBy(x => x.Availability.AvailableDate)
+                    .ThenBy(x => x.Availability.StartTime),
 
+                "activity_asc" => query
+                    .OrderBy(x => x.Availability.ActivityType.ActivityName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                "user_asc" => query
+                    .OrderBy(x => x.User.FullName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                _ => query
+                    .OrderByDescending(x => x.Availability.AvailableDate)
+                    .ThenByDescending(x => x.Availability.StartTime)
+            };
             // Projection
             var appointments = await query
-                .OrderByDescending(x =>
-                    x.Availability.AvailableDate)
-                .ThenByDescending(x =>
-                    x.Availability.StartTime)
                 .Select(x => new CoachAppointmentViewModel
                 {
                     BookingId = x.BookingId,
@@ -636,6 +649,7 @@ namespace Schedule_Management.Controllers
             ViewBag.Status = status;
             ViewBag.SelectedDate = date;
             ViewBag.AppointmentPeriod = appointmentPeriod;
+            ViewBag.SortOrder = sortOrder;
             return View(appointments);
         }
 
