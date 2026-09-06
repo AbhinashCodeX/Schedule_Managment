@@ -554,5 +554,152 @@ namespace Schedule_Management.Controllers
                 message = "Availability deleted successfully."
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> MyAppointments(string? status, DateOnly? date, string? appointmentPeriod)
+        {
+            int? coachId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (!coachId.HasValue)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var query = _context.Bookings
+              .Where(x =>
+                  x.Availability.CoachId == coachId.Value)
+              .Include(x => x.User)
+              .Include(x => x.Availability)
+                  .ThenInclude(x => x.ActivityType)
+              .AsQueryable();
+
+            // Status Filter
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(x =>
+                    x.BookingStatus == status);
+            }
+            // Date Filter
+            if (date.HasValue)
+            {
+                query = query.Where(x =>
+                    x.Availability.AvailableDate == date.Value);
+            }
+            // Appointment Period Filter
+            var today = DateOnly.FromDateTime(DateTime.Now);
+
+            if (!string.IsNullOrWhiteSpace(appointmentPeriod))
+            {
+                if (appointmentPeriod == "Upcoming")
+                {
+                    query = query.Where(x =>
+                        x.Availability.AvailableDate >= today);
+                }
+                else if (appointmentPeriod == "Past")
+                {
+                    query = query.Where(x =>
+                        x.Availability.AvailableDate < today);
+                }
+            }
+
+            // Projection
+            var appointments = await query
+                .OrderByDescending(x =>
+                    x.Availability.AvailableDate)
+                .ThenByDescending(x =>
+                    x.Availability.StartTime)
+                .Select(x => new CoachAppointmentViewModel
+                {
+                    BookingId = x.BookingId,
+
+                    UserName =
+                        x.User.FullName,
+
+                    ActivityName =
+                        x.Availability.ActivityType.ActivityName,
+
+                    BookingDate =
+                        x.Availability.AvailableDate,
+
+                    StartTime =
+                        x.Availability.StartTime,
+
+                    EndTime =
+                        x.Availability.EndTime,
+
+                    BookingStatus =
+                        x.BookingStatus
+                })
+                .ToListAsync();
+
+            ViewBag.Status = status;
+            ViewBag.SelectedDate = date;
+            ViewBag.AppointmentPeriod = appointmentPeriod;
+            return View(appointments);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkCompleted(int id)
+        {
+            int? coachId =
+                HttpContext.Session.GetInt32("UserId");
+
+            if (!coachId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            var booking = await _context.Bookings
+                .Include(x => x.Availability)
+                .FirstOrDefaultAsync(x =>
+                    x.BookingId == id &&
+                    x.Availability.CoachId == coachId.Value);
+
+            if (booking == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Booking not found."
+                });
+            }
+
+            if (booking.BookingStatus == "Cancelled")
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Cancelled booking cannot be completed."
+                });
+            }
+
+            if (booking.BookingStatus == "Completed")
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Booking is already completed."
+                });
+            }
+
+            booking.BookingStatus = "Completed";
+
+            booking.ModifiedOn = DateTime.Now;
+            booking.ModifiedBy = coachId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "Appointment marked as completed successfully."
+            });
+        }
     }
 }

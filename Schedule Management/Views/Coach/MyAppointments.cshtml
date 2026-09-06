@@ -1,0 +1,324 @@
+﻿@model IEnumerable<Schedule_Management.ViewModels.CoachAppointmentViewModel>
+
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                My Appointments
+            </h2>
+
+            <p class="text-muted mb-0">
+                View users who have booked your available slots.
+            </p>
+        </div>
+
+        <a asp-controller="Coach"
+           asp-action="Dashboard"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            
+            <form asp-controller="Coach"
+                  asp-action="MyAppointments"
+                  method="get"
+                  class="row g-2 mb-3">
+
+
+                <!-- STATUS FILTER -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">
+                        Status
+                    </label>
+
+                    <select name="status"
+                            class="form-select">
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option value="Confirmed"
+                                selected="@(ViewBag.Status == "Confirmed")">
+                            Confirmed
+                        </option>
+
+                        <option value="Completed"
+                                selected="@(ViewBag.Status == "Completed")">
+                            Completed
+                        </option>
+
+                        <option value="Cancelled"
+                                selected="@(ViewBag.Status == "Cancelled")">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- DATE FILTER -->
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Date
+                    </label>
+
+                    <input type="date"
+                           name="date"
+                           value="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+
+                </div>
+
+                <!-- PERIOD FILTER -->
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Period
+                    </label>
+
+                    <select name="appointmentPeriod"
+                            class="form-select">
+
+                        <option value="">
+                            All Appointments
+                        </option>
+
+                        <option value="Upcoming"
+                                selected="@(ViewBag.AppointmentPeriod == "Upcoming")">
+                            Upcoming
+                        </option>
+
+                        <option value="Past"
+                                selected="@(ViewBag.AppointmentPeriod == "Past")">
+                            Past
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- FILTER BUTTON -->
+                <div class="col-auto">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Filter
+                    </button>
+
+                </div>
+
+                <!-- RESET BUTTON -->
+                <div class="col-auto">
+
+                    <a asp-controller="Coach"
+                       asp-action="MyAppointments"
+                       class="btn btn-secondary">
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    No appointments found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th>Activity</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @item.UserName
+                                    </td>
+
+                                    <td>
+                                        @item.ActivityName
+                                    </td>
+
+                                    <td>
+                                        @item.BookingDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @item.StartTime.ToString("HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @item.EndTime.ToString("HH:mm")
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.BookingStatus == "Confirmed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Confirmed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Completed")
+                                        {
+                                            <span class="badge bg-primary">
+                                                Completed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Cancelled")
+                                        {
+                                            <span class="badge bg-danger">
+                                                Cancelled
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @item.BookingStatus
+                                            </span>
+                                        }
+
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.BookingStatus == "Confirmed")
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-primary btn-sm btn-mark-completed"
+                                                    data-id="@item.BookingId">
+                                                Mark Completed
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                No Action
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+<form id="markCompletedForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+@section Scripts
+{
+    <script>
+
+        $(document).on("click", ".btn-mark-completed", function () {
+
+            var button = $(this);
+            var bookingId = button.data("id");
+
+            Swal.fire({
+                title: "Mark as Completed?",
+                text: "This appointment will be marked as completed.",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Complete",
+                cancelButtonText: "No"
+            }).then(function (result) {
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                var token =
+                    $('#markCompletedForm input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+
+                    url: '@Url.Action("MarkCompleted", "Coach")',
+
+                    type: 'POST',
+
+                    data: {
+                        __RequestVerificationToken: token,
+                        id: bookingId
+                    },
+
+                    success: function (response) {
+
+                        if (response.success) {
+
+                            toastr.success(response.message);
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 700);
+
+                        }
+                        else {
+                            toastr.error(response.message);
+                        }
+                    },
+
+                    error: function () {
+
+                        toastr.error(
+                            "Something went wrong while updating appointment."
+                        );
+
+                    }
+
+                });
+
+            });
+
+        });
+
+    </script>
+}
