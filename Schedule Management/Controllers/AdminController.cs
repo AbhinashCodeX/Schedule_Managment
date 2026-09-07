@@ -11,19 +11,14 @@ namespace Schedule_Management.Controllers
     public class AdminController : Controller
     {
         private readonly ScheduleManagementDbContext _context;
-        public AdminController(
-          ScheduleManagementDbContext context)
+        public AdminController(ScheduleManagementDbContext context)
         {
             _context = context;
         }
 
         //Once the user is logged in if by mistakely the user hits the back button the browser will take the user to the previous page which is the login page.
         //To avoid this we will use the ResponseCache attribute to prevent caching of the login page. This will ensure that when the user hits the back button, they will be redirected to the dashboard page instead of the login page.
-        [ResponseCache(
-         Duration = 0,
-         Location = ResponseCacheLocation.None,
-         NoStore = true
-         )]
+        [ResponseCache(Duration = 0,Location = ResponseCacheLocation.None,NoStore = true)]
         public IActionResult Dashboard()
         {
             return View();
@@ -144,12 +139,7 @@ namespace Schedule_Management.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> Users(
-        string? search,
-        string? role,
-        string? status,
-        string? sortOrder,
-         int page = 1)
+        public async Task<IActionResult> Users(string? search,string? role,string? status,string? sortOrder,int page = 1)
         {
             // STEP 1: Query start
             var query = _context.Users
@@ -534,6 +524,280 @@ namespace Schedule_Management.Controllers
             ViewBag.TotalRecords = totalRecords;
 
             return View(bookings);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Countries(string? search,string? status,int page = 1)
+        {
+            var query = _context.Countries.AsQueryable();
+
+            // SEARCH
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(x =>
+                    x.CountryName.Contains(search) ||
+                    x.Iso2.Contains(search) ||
+                    (x.Iso3 != null && x.Iso3.Contains(search)) ||
+                    (x.PhoneCode != null && x.PhoneCode.Contains(search)));
+            }
+
+            // STATUS FILTER
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == "Active")
+                {
+                    query = query.Where(x => x.IsActive);
+                }
+                else if (status == "Inactive")
+                {
+                    query = query.Where(x => !x.IsActive);
+                }
+            }
+
+            // SORT
+            query = query.OrderBy(x => x.CountryName);
+
+            // PAGINATION
+            int pageSize = 5;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            if (page < 1)
+                page = 1;
+
+            if (page > totalPages && totalPages > 0)
+                page = totalPages;
+
+            var countries = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new CountryViewModel
+                {
+                    CountryId = x.CountryId,
+                    CountryName = x.CountryName,
+                    Iso2 = x.Iso2,
+                    Iso3 = x.Iso3,
+                    PhoneCode = x.PhoneCode,
+                    IsActive = x.IsActive
+                })
+                .ToListAsync();
+
+            // PRESERVE FILTER VALUES
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            // PAGINATION VALUES
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
+            return View(countries);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCountry(CountryCreateViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid country details."
+                });
+            }
+
+            model.CountryName = model.CountryName.Trim();
+            model.Iso2 = model.Iso2.Trim().ToUpper();
+
+            if (!string.IsNullOrWhiteSpace(model.Iso3))
+            {
+                model.Iso3 = model.Iso3.Trim().ToUpper();
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.PhoneCode))
+            {
+                model.PhoneCode = model.PhoneCode.Trim();
+            }
+
+            bool countryExists = await _context.Countries
+                .AnyAsync(x =>
+                    x.CountryName == model.CountryName ||
+                    x.Iso2 == model.Iso2);
+
+            if (countryExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Country name or ISO2 code already exists."
+                });
+            }
+
+            var country = new Country
+            {
+                CountryName = model.CountryName,
+                Iso2 = model.Iso2,
+                Iso3 = model.Iso3,
+                PhoneCode = model.PhoneCode,
+
+                IsActive = true,
+
+                CreatedOn = DateTime.UtcNow,
+                CreatedBy = adminId.Value
+            };
+
+            _context.Countries.Add(country);
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "Country added successfully."
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCountry(CountryEditViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid country details."
+                });
+            }
+
+            var country = await _context.Countries
+                .FirstOrDefaultAsync(x =>
+                    x.CountryId == model.CountryId);
+
+            if (country == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Country not found."
+                });
+            }
+
+            model.CountryName = model.CountryName.Trim();
+            model.Iso2 = model.Iso2.Trim().ToUpper();
+
+            if (!string.IsNullOrWhiteSpace(model.Iso3))
+            {
+                model.Iso3 = model.Iso3.Trim().ToUpper();
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.PhoneCode))
+            {
+                model.PhoneCode = model.PhoneCode.Trim();
+            }
+
+            // Check duplicate except current country
+            bool duplicateExists = await _context.Countries
+                .AnyAsync(x =>
+                    x.CountryId != model.CountryId &&
+                    (x.CountryName == model.CountryName ||
+                     x.Iso2 == model.Iso2));
+
+            if (duplicateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Country name or ISO2 code already exists."
+                });
+            }
+
+            country.CountryName = model.CountryName;
+            country.Iso2 = model.Iso2;
+            country.Iso3 = model.Iso3;
+            country.PhoneCode = model.PhoneCode;
+
+            country.ModifiedOn = DateTime.UtcNow;
+            country.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "Country updated successfully."
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleCountryStatus(int id)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            var country = await _context.Countries
+                .FirstOrDefaultAsync(x => x.CountryId == id);
+
+            if (country == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Country not found."
+                });
+            }
+
+            country.IsActive = !country.IsActive;
+            country.ModifiedOn = DateTime.UtcNow;
+            country.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                isActive = country.IsActive,
+                message = country.IsActive
+                    ? "Country activated successfully."
+                    : "Country deactivated successfully."
+            });
         }
     }
 }
