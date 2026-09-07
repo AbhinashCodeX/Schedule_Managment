@@ -1,0 +1,280 @@
+﻿@model IEnumerable<Schedule_Management.ViewModels.AdminBookingViewModel>
+
+@{
+    ViewData["Title"] = "Booking Management";
+}
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                Booking Management
+            </h2>
+
+            <p class="text-muted mb-0">
+                View and manage all user bookings.
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Dashboard"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- BOOKING TABLE CARD -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            <form asp-controller="Admin"
+                  asp-action="Bookings"
+                  method="get"
+                  class="row g-3 align-items-end mb-4">
+
+                <!-- SEARCH -->
+                <div class="col-md-5">
+
+                    <label class="form-label fw-semibold">
+                        Search
+                    </label>
+
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Search by user, coach or activity" />
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Status
+                    </label>
+
+                    <select name="status"
+                            class="form-select">
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option value="Confirmed"
+                                selected="@(ViewBag.Status == "Confirmed")">
+                            Confirmed
+                        </option>
+
+                        <option value="Completed"
+                                selected="@(ViewBag.Status == "Completed")">
+                            Completed
+                        </option>
+
+                        <option value="Cancelled"
+                                selected="@(ViewBag.Status == "Cancelled")">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Date
+                    </label>
+
+                    <input type="date"
+                           name="date"
+                           value="@(ViewBag.SelectedDate?.ToString("yyyy-MM-dd"))"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label fw-semibold">
+                        Sort By
+                    </label>
+
+                    <select name="sortOrder"
+                            class="form-select">
+
+                        <option value=""
+                                selected="@(string.IsNullOrEmpty(ViewBag.SortOrder))">
+                            Date - Newest First
+                        </option>
+
+                        <option value="date_asc"
+                                selected="@(ViewBag.SortOrder == "date_asc")">
+                            Date - Oldest First
+                        </option>
+
+                        <option value="user_asc"
+                                selected="@(ViewBag.SortOrder == "user_asc")">
+                            User - A to Z
+                        </option>
+
+                        <option value="coach_asc"
+                                selected="@(ViewBag.SortOrder == "coach_asc")">
+                            Coach - A to Z
+                        </option>
+
+                        <option value="activity_asc"
+                                selected="@(ViewBag.SortOrder == "activity_asc")">
+                            Activity - A to Z
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FILTER BUTTON -->
+                <div class="col-auto">
+
+                    <button type="submit"
+                            class="btn btn-primary px-4">
+                        Search
+                    </button>
+
+                </div>
+
+
+                <!-- RESET -->
+                <div class="col-auto">
+
+                    <a asp-controller="Admin"
+                       asp-action="Bookings"
+                       class="btn btn-outline-secondary px-4">
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    No bookings found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>User</th>
+                                <th>Coach</th>
+                                <th>Activity</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Booked On</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <!-- USER -->
+                                    <td>
+                                        @item.UserName
+                                    </td>
+
+
+                                    <!-- COACH -->
+                                    <td>
+                                        @item.CoachName
+                                    </td>
+
+
+                                    <!-- ACTIVITY -->
+                                    <td>
+                                        @item.ActivityName
+                                    </td>
+
+
+                                    <!-- APPOINTMENT DATE -->
+                                    <td>
+                                        @item.BookingDate.ToString("dd MMM yyyy")
+                                    </td>
+
+
+                                    <!-- TIME -->
+                                    <td>
+                                        @item.StartTime.ToString("HH:mm")
+                                        -
+                                        @item.EndTime.ToString("HH:mm")
+                                    </td>
+
+
+                                    <!-- STATUS -->
+                                    <td>
+
+                                        @if (item.BookingStatus == "Confirmed")
+                                        {
+                                            <span class="badge bg-success">
+                                                Confirmed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Completed")
+                                        {
+                                            <span class="badge bg-primary">
+                                                Completed
+                                            </span>
+                                        }
+                                        else if (item.BookingStatus == "Cancelled")
+                                        {
+                                            <span class="badge bg-danger">
+                                                Cancelled
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @item.BookingStatus
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <!-- BOOKED ON -->
+                                    <td>
+                                        @item.BookedOn.ToString("dd MMM yyyy")
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>

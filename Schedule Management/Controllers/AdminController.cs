@@ -415,5 +415,125 @@ namespace Schedule_Management.Controllers
         //    adminId = userId.Value;
         //    return true;
         //}
+
+        [HttpGet]
+        public async Task<IActionResult> Bookings(string? search,string? status, DateOnly? date, string? sortOrder, int page = 1)
+        {
+            var query = _context.Bookings
+            .Include(x => x.User)
+            .Include(x => x.Availability)
+                .ThenInclude(x => x.Coach)
+            .Include(x => x.Availability)
+                .ThenInclude(x => x.ActivityType)
+            .AsQueryable();
+
+
+            // SEARCH
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(x =>
+                    x.User.FullName.Contains(search) ||
+                    x.Availability.Coach.FullName.Contains(search) ||
+                    x.Availability.ActivityType.ActivityName.Contains(search));
+            }
+
+
+            // STATUS FILTER
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(x =>
+                    x.BookingStatus == status);
+            }
+
+            // DATE FILTER
+            if (date.HasValue)
+            {
+                query = query.Where(x =>
+                    x.Availability.AvailableDate == date.Value);
+            }
+
+            // SORTING
+            query = sortOrder switch
+            {
+                "date_asc" => query
+                    .OrderBy(x => x.Availability.AvailableDate)
+                    .ThenBy(x => x.Availability.StartTime),
+
+                "user_asc" => query
+                    .OrderBy(x => x.User.FullName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                "coach_asc" => query
+                    .OrderBy(x => x.Availability.Coach.FullName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                "activity_asc" => query
+                    .OrderBy(x => x.Availability.ActivityType.ActivityName)
+                    .ThenBy(x => x.Availability.AvailableDate),
+
+                _ => query
+                    .OrderByDescending(x => x.Availability.AvailableDate)
+                    .ThenByDescending(x => x.Availability.StartTime)
+            };
+
+            //pagination
+            // PAGINATION
+            int pageSize = 5;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages && totalPages > 0)
+            {
+                page = totalPages;
+            }
+
+            var bookings = await _context.Bookings
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new AdminBookingViewModel
+                {
+                    BookingId = x.BookingId,
+
+                    UserName = x.User.FullName,
+
+                    CoachName = x.Availability.Coach.FullName,
+
+                    ActivityName = x.Availability.ActivityType.ActivityName,
+
+                    BookingDate = x.Availability.AvailableDate,
+
+                    StartTime = x.Availability.StartTime,
+
+                    EndTime = x.Availability.EndTime,
+
+                    BookingStatus = x.BookingStatus,
+
+                    BookedOn = x.BookedOn,
+
+                    IsActive = x.IsActive
+                })
+                .ToListAsync();
+
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+            ViewBag.SelectedDate = date;
+            ViewBag.SortOrder = sortOrder;
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
+            return View(bookings);
+        }
     }
 }
