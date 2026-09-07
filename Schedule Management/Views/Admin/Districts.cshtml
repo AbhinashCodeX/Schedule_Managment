@@ -1,0 +1,311 @@
+﻿@model IEnumerable<Schedule_Management.ViewModels.DistrictViewModel>
+
+@{
+    ViewData["Title"] = "District Management";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">District Management</h2>
+            <p class="text-muted mb-0">
+                Manage districts linked with states and countries.
+            </p>
+        </div>
+
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#addDistrictModal">
+
+            <i class="bi bi-plus-circle me-1"></i>
+            Add District
+
+        </button>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    No districts found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Country</th>
+                                <th>State</th>
+                                <th>District</th>
+                                <th>District Code</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>@item.CountryName</td>
+
+                                    <td>@item.StateName</td>
+
+                                    <td>@item.DistrictName</td>
+
+                                    <td>@item.DistrictCode</td>
+
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary">
+                                            Edit
+                                        </button>
+
+                                        @if (item.IsActive)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                Deactivate
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-success">
+                                                Activate
+                                            </button>
+                                        }
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ADD DISTRICT MODAL -->
+<div class="modal fade"
+     id="addDistrictModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="addDistrictForm">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Add District
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- COUNTRY -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Country
+                        </label>
+
+                        <select id="addCountryId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Country --
+                            </option>
+
+                            @foreach (var country in ViewBag.Countries)
+                            {
+                                <option value="@country.CountryId">
+                                    @country.CountryName
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- STATE -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            State
+                        </label>
+
+                        <select id="addStateId"
+                                name="StateId"
+                                class="form-select"
+                                required
+                                disabled>
+
+                            <option value="">
+                                -- Select State --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DISTRICT NAME -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            District Name
+                        </label>
+
+                        <input type="text"
+                               name="DistrictName"
+                               class="form-control"
+                               maxlength="200"
+                               placeholder="Enter district name"
+                               required />
+
+                    </div>
+
+
+                    <!-- DISTRICT CODE -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            District Code
+                        </label>
+
+                        <input type="text"
+                               name="DistrictCode"
+                               class="form-control text-uppercase"
+                               maxlength="100"
+                               placeholder="Enter district code"
+                               required />
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Save District
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+    $("#addDistrictForm").on("submit", function (e) {
+
+    e.preventDefault();
+
+    var form = $(this);
+
+    $.ajax({
+
+        url: '@Url.Action("CreateDistrict", "Admin")',
+
+        type: "POST",
+
+        data: form.serialize(),
+
+        success: function (response) {
+
+            if (response.success) {
+
+                toastr.success(response.message);
+
+                var modalElement =
+                    document.getElementById("addDistrictModal");
+
+                var modalInstance =
+                    bootstrap.Modal.getInstance(modalElement);
+
+                modalInstance.hide();
+
+                setTimeout(function () {
+                    location.reload();
+                }, 700);
+
+            }
+            else {
+
+                toastr.error(response.message);
+
+            }
+        },
+
+        error: function () {
+
+            toastr.error(
+                "Something went wrong while adding district."
+            );
+
+        }
+
+    });
+
+});
+</script>

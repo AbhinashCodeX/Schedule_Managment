@@ -801,11 +801,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> States(
-      string? search,
-      int? countryId,
-      string? status,
-      int page = 1)
+        public async Task<IActionResult> States(string? search,int? countryId,string? status,int page = 1)
         {
             var query = _context.States
                 .Include(x => x.Country)
@@ -1097,6 +1093,196 @@ namespace Schedule_Management.Controllers
                 message = state.IsActive
                     ? "State activated successfully."
                     : "State deactivated successfully."
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Districts(string? search,int? countryId,int? stateId,string? status,int page = 1)
+        {
+            var query = _context.Districts
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(x =>
+                    x.DistrictName.Contains(search) ||
+                    x.DistrictCode.Contains(search) ||
+                    x.State.StateName.Contains(search) ||
+                    x.State.Country.CountryName.Contains(search));
+            }
+
+            // Country Filter
+            if (countryId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.State.CountryId == countryId.Value);
+            }
+
+            // State Filter
+            if (stateId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.StateId == stateId.Value);
+            }
+
+            // Status Filter
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == "Active")
+                {
+                    query = query.Where(x => x.IsActive);
+                }
+                else if (status == "Inactive")
+                {
+                    query = query.Where(x => !x.IsActive);
+                }
+            }
+
+            // Sorting
+            query = query
+                .OrderBy(x => x.DistrictId);
+
+            // Pagination
+            int pageSize = 10;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            if (page < 1)
+                page = 1;
+
+            if (page > totalPages && totalPages > 0)
+                page = totalPages;
+
+            var districts = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new DistrictViewModel
+                {
+                    DistrictId = x.DistrictId,
+
+                    StateId = x.StateId,
+
+                    CountryId = x.State.CountryId,
+
+                    CountryName = x.State.Country.CountryName,
+
+                    StateName = x.State.StateName,
+
+                    DistrictName = x.DistrictName,
+
+                    DistrictCode = x.DistrictCode,
+
+                    IsActive = x.IsActive
+                })
+                .ToListAsync();
+
+            // Countries for filter / Add modal
+            ViewBag.Countries = await _context.Countries
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.CountryName)
+                .Select(x => new
+                {
+                    x.CountryId,
+                    x.CountryName
+                })
+                .ToListAsync();
+
+            ViewBag.Search = search;
+            ViewBag.CountryId = countryId;
+            ViewBag.StateId = stateId;
+            ViewBag.Status = status;
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
+            return View(districts);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDistrict(DistrictCreateViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid district details."
+                });
+            }
+
+            model.DistrictName = model.DistrictName.Trim();
+            model.DistrictCode = model.DistrictCode.Trim().ToUpperInvariant();
+
+            // Check selected State
+            bool stateExists = await _context.States
+                .AnyAsync(x =>
+                    x.StateId == model.StateId &&
+                    x.IsActive);
+
+            if (!stateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Selected state is invalid or inactive."
+                });
+            }
+
+            // DistrictCode must be unique inside that State
+            bool duplicateExists = await _context.Districts
+                .AnyAsync(x =>
+                    x.StateId == model.StateId &&
+                    x.DistrictCode == model.DistrictCode);
+
+            if (duplicateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "This district code already exists for the selected state."
+                });
+            }
+
+            var district = new District
+            {
+                StateId = model.StateId,
+                DistrictName = model.DistrictName,
+                DistrictCode = model.DistrictCode,
+
+                IsActive = true,
+
+                CreatedOn = DateTime.UtcNow,
+                CreatedBy = adminId.Value
+            };
+
+            _context.Districts.Add(district);
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "District added successfully."
             });
         }
     }
