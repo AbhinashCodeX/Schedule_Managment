@@ -758,7 +758,7 @@ namespace Schedule_Management.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]  
         public async Task<IActionResult> ToggleCountryStatus(int id)
         {
             int? adminId = HttpContext.Session.GetInt32("UserId");
@@ -797,6 +797,306 @@ namespace Schedule_Management.Controllers
                 message = country.IsActive
                     ? "Country activated successfully."
                     : "Country deactivated successfully."
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> States(
+      string? search,
+      int? countryId,
+      string? status,
+      int page = 1)
+        {
+            var query = _context.States
+                .Include(x => x.Country)
+                .AsQueryable();
+
+            // Search
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+
+                query = query.Where(x =>
+                    x.StateName.Contains(search) ||
+                    x.StateCode.Contains(search) ||
+                    x.Country.CountryName.Contains(search));
+            }
+
+            // Country Filter
+            if (countryId.HasValue)
+            {
+                query = query.Where(x => x.CountryId == countryId.Value);
+            }
+
+            // Status Filter
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == "Active")
+                {
+                    query = query.Where(x => x.IsActive);
+                }
+                else if (status == "Inactive")
+                {
+                    query = query.Where(x => !x.IsActive);
+                }
+            }
+
+            // Sorting
+            query = query
+                .OrderBy(x => x.Country.CountryName)
+                .ThenBy(x => x.StateName);
+
+            // Pagination
+            int pageSize = 10;
+
+            int totalRecords = await query.CountAsync();
+
+            int totalPages =
+                (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            if (page < 1)
+                page = 1;
+
+            if (page > totalPages && totalPages > 0)
+                page = totalPages;
+
+            var states = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => new StateViewModel
+                {
+                    StateId = x.StateId,
+                    CountryId = x.CountryId,
+                    CountryName = x.Country.CountryName,
+                    StateName = x.StateName,
+                    StateCode = x.StateCode,
+                    IsActive = x.IsActive
+                })
+                .ToListAsync();
+
+            // Country dropdown
+            ViewBag.Countries = await _context.Countries
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.CountryName)
+                .Select(x => new
+                {
+                    x.CountryId,
+                    x.CountryName
+                })
+                .ToListAsync();
+
+            // Preserve filters
+            ViewBag.Search = search;
+            ViewBag.CountryId = countryId;
+            ViewBag.Status = status;
+
+            // Pagination
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalRecords = totalRecords;
+
+            return View(states);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateState(StateCreateViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid state details."
+                });
+            }
+
+            model.StateName = model.StateName.Trim();
+            model.StateCode = model.StateCode.Trim().ToUpper();
+
+            bool countryExists = await _context.Countries.AnyAsync(x =>x.CountryId == model.CountryId &&x.IsActive);
+
+            if (!countryExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Selected country is invalid or inactive."
+                });
+            }
+
+            bool duplicateExists = await _context.States.AnyAsync(x =>x.CountryId == model.CountryId &&x.StateCode == model.StateCode);
+
+            if (duplicateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "This state code already exists for the selected country."
+                });
+            }
+
+            var state = new State
+            {
+                CountryId = model.CountryId,
+                StateName = model.StateName,
+                StateCode = model.StateCode,
+
+                IsActive = true,
+
+                CreatedOn = DateTime.UtcNow,
+                CreatedBy = adminId.Value
+            };
+
+            _context.States.Add(state);
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "State added successfully."
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditState(StateEditViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid state details."
+                });
+            }
+
+            var state = await _context.States
+                .FirstOrDefaultAsync(x => x.StateId == model.StateId);
+
+            if (state == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "State not found."
+                });
+            }
+
+            model.StateName = model.StateName.Trim();
+            model.StateCode = model.StateCode.Trim().ToUpperInvariant();
+
+            // Selected country must exist and be active
+            bool countryExists = await _context.Countries
+                .AnyAsync(x =>
+                    x.CountryId == model.CountryId &&
+                    x.IsActive);
+
+            if (!countryExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Selected country is invalid or inactive."
+                });
+            }
+
+            // Duplicate StateCode check, excluding current State
+            bool duplicateExists = await _context.States
+                .AnyAsync(x =>
+                    x.StateId != model.StateId &&
+                    x.CountryId == model.CountryId &&
+                    x.StateCode == model.StateCode);
+
+            if (duplicateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "This state code already exists for the selected country."
+                });
+            }
+
+            state.CountryId = model.CountryId;
+            state.StateName = model.StateName;
+            state.StateCode = model.StateCode;
+
+            state.ModifiedOn = DateTime.UtcNow;
+            state.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "State updated successfully."
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStateStatus(int id)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            var state = await _context.States
+                .FirstOrDefaultAsync(x => x.StateId == id);
+
+            if (state == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "State not found."
+                });
+            }
+
+            state.IsActive = !state.IsActive;
+
+            state.ModifiedOn = DateTime.UtcNow;
+            state.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                isActive = state.IsActive,
+                message = state.IsActive
+                    ? "State activated successfully."
+                    : "State deactivated successfully."
             });
         }
     }

@@ -78,15 +78,15 @@
 
                         <li>
                             <a asp-controller="Admin"
-                               asp-action="UsersList">
+                               asp-action="Users">
                                 <i class="bi bi-people"></i>
                                 <span>Users & Coaches</span>
                             </a>
                         </li>
 
                         <li>
-                            <a asp-controller="Admin"
-                               asp-action="ActivityTypes">
+                            <a asp-controller="ActivityType"
+                               asp-action="Index">
                                 <i class="bi bi-list-check"></i>
                                 <span>Activity Types</span>
                             </a>
@@ -105,6 +105,14 @@
                                asp-action="Countries">
                                 <i class="bi bi-globe"></i>
                                 <span>Countries</span>
+                            </a>
+                        </li>
+                        <!-- STATES -->
+                        <li>
+                            <a asp-controller="Admin"
+                               asp-action="States">
+                                <i class="bi bi-map"></i>
+                                <span>States</span>
                             </a>
                         </li>
                     }
