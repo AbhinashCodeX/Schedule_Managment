@@ -526,6 +526,7 @@ namespace Schedule_Management.Controllers
             return View(bookings);
         }
 
+        #region Countries all Functionalities
         [HttpGet]
         public async Task<IActionResult> Countries(string? search,string? status,int page = 1)
         {
@@ -799,6 +800,10 @@ namespace Schedule_Management.Controllers
                     : "Country deactivated successfully."
             });
         }
+
+        #endregion
+
+        #region States all functionalities
 
         [HttpGet]
         public async Task<IActionResult> States(string? search,int? countryId,string? status,int page = 1)
@@ -1096,6 +1101,9 @@ namespace Schedule_Management.Controllers
             });
         }
 
+        #endregion
+
+        #region Districts all functionalities
         [HttpGet]
         public async Task<IActionResult> Districts(string? search,int? countryId,int? stateId,string? status,int page = 1)
         {
@@ -1285,5 +1293,26 @@ namespace Schedule_Management.Controllers
                 message = "District added successfully."
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetStatesByCountry(int countryId)
+        {
+            var states = await _context.States
+                .AsNoTracking()
+                .Where(x =>
+                    x.CountryId == countryId &&
+                    x.IsActive)
+                .OrderBy(x => x.StateName)
+                .Select(x => new
+                {
+                    stateId = x.StateId,
+                    stateName = x.StateName
+                })
+                .ToListAsync();
+
+            return Json(states);
+        }
+
+        #endregion
     }
 }

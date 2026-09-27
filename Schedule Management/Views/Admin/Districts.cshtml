@@ -86,7 +86,12 @@
 
                                     <td>
                                         <button type="button"
-                                                class="btn btn-sm btn-outline-primary">
+                                                class="btn btn-sm btn-outline-primary btn-edit-district"
+                                                data-id="@item.DistrictId"
+                                                data-country-id="@item.CountryId"
+                                                data-state-id="@item.StateId"
+                                                data-name="@item.DistrictName"
+                                                data-code="@item.DistrictCode">
                                             Edit
                                         </button>
 
@@ -256,6 +261,143 @@
     </div>
 
 </div>
+
+<!-- EDIT DISTRICT MODAL -->
+<div class="modal fade"
+     id="editDistrictModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form id="editDistrictForm">
+
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Edit District
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           id="editDistrictId"
+                           name="DistrictId" />
+
+                    <!-- COUNTRY -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            Country
+                        </label>
+
+                        <select id="editCountryId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select Country --
+                            </option>
+
+                            @foreach (var country in ViewBag.Countries)
+                            {
+                                <option value="@country.CountryId">
+                                    @country.CountryName
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <!-- STATE -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            State
+                        </label>
+
+                        <select id="editStateId"
+                                name="StateId"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                -- Select State --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- DISTRICT NAME -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            District Name
+                        </label>
+
+                        <input type="text"
+                               id="editDistrictName"
+                               name="DistrictName"
+                               class="form-control"
+                               maxlength="200"
+                               required />
+
+                    </div>
+
+                    <!-- DISTRICT CODE -->
+                    <div class="mb-3">
+
+                        <label class="form-label fw-semibold">
+                            District Code
+                        </label>
+
+                        <input type="text"
+                               id="editDistrictCode"
+                               name="DistrictCode"
+                               class="form-control text-uppercase"
+                               maxlength="100"
+                               required />
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Update District
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts{
 <script>
     $("#addDistrictForm").on("submit", function (e) {
 
@@ -308,4 +450,76 @@
     });
 
 });
+
+
+    $(document).on("click", ".btn-edit-district", function () {
+
+        var button = $(this);
+
+        var districtId = button.data("id");
+        var countryId = button.data("country-id");
+        var stateId = button.data("state-id");
+
+        // Basic fields
+        $("#editDistrictId").val(districtId);
+        $("#editDistrictName").val(button.data("name"));
+        $("#editDistrictCode").val(button.data("code"));
+
+        // Existing country select
+        $("#editCountryId").val(countryId);
+
+        var stateDropdown = $("#editStateId");
+
+        stateDropdown.empty();
+
+        stateDropdown.append(
+            '<option value="">-- Select State --</option>'
+        );
+
+        // Load states of existing country
+        $.ajax({
+
+            url: '@Url.Action("GetStatesByCountry", "Admin")',
+            type: "GET",
+
+            data: {
+                countryId: countryId
+            },
+
+            success: function (states) {
+
+                $.each(states, function (index, state) {
+
+                    stateDropdown.append(
+                        $("<option></option>")
+                            .val(state.stateId)
+                            .text(state.stateName)
+                    );
+
+                });
+
+                // Existing State select
+                stateDropdown.val(stateId);
+
+                // Open modal
+                var modal = new bootstrap.Modal(
+                    document.getElementById("editDistrictModal")
+                );
+
+                modal.show();
+            },
+
+        error: function (xhr, status, error) {
+
+            console.log("Status:", xhr.status);
+            console.log("Response:", xhr.responseText);
+            console.log("Error:", error);
+
+            toastr.error("Unable to load states.");
+        }
+
+        });
+
+    });
 </script>
+}
