@@ -521,5 +521,102 @@
         });
 
     });
+
+
+                     $("#editDistrictForm").on("submit", function (e) {
+
+                     e.preventDefault();
+
+                     var form = $(this);
+
+                     $.ajax({
+
+                         url: '@Url.Action("EditDistrict", "Admin")',
+
+                         type: "POST",
+
+                         data: form.serialize(),
+
+                         success: function (response) {
+
+                             if (response.success) {
+
+                                 toastr.success(response.message);
+
+                                 var modalElement = document.getElementById("editDistrictModal");
+
+                                 var modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+                                 modalInstance.hide();
+
+                                 setTimeout(function () {
+                                     location.reload();
+                                 }, 700);
+
+                             }
+                             else {
+                                 toastr.error(response.message);
+                             }
+
+                         },
+
+                         error: function () {
+
+                             toastr.error(
+                                 "Something went wrong while updating district."
+                             );
+
+                         }
+
+                     });
+
+                 });
+
+            $("#editCountryId").on("change", function () {
+
+            var countryId = $(this).val();
+            var stateDropdown = $("#editStateId");
+
+            stateDropdown.empty();
+
+            stateDropdown.append(
+                '<option value="">-- Select State --</option>'
+            );
+
+            if (!countryId) {
+                return;
+            }
+
+            $.ajax({
+
+                url: '@Url.Action("GetStatesByCountry", "Admin")',
+
+                type: "GET",
+
+                data: {
+                    countryId: countryId
+                },
+
+                success: function (states) {
+
+                    $.each(states, function (index, state) {
+
+                        stateDropdown.append(
+                            $("<option></option>")
+                                .val(state.stateId)
+                                .text(state.stateName)
+                        );
+
+                    });
+
+                },
+
+                error: function () {
+                    toastr.error("Unable to load states.");
+                }
+
+            });
+
+        });
 </script>
 }

@@ -1313,6 +1313,91 @@ namespace Schedule_Management.Controllers
             return Json(states);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDistrict(DistrictEditViewModel model)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Please enter valid district details."
+                });
+            }
+
+            var district = await _context.Districts.FirstOrDefaultAsync(x => x.DistrictId == model.DistrictId);
+
+            if (district == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "District not found."
+                });
+            }
+
+            model.DistrictName = model.DistrictName.Trim();
+            model.DistrictCode = model.DistrictCode.Trim().ToUpperInvariant();
+
+            // Validate selected State
+            bool stateExists = await _context.States
+                .AnyAsync(x =>
+                    x.StateId == model.StateId &&
+                    x.IsActive);
+
+            if (!stateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Selected state is invalid or inactive."
+                });
+            }
+
+            // Check duplicate District Code inside same State
+            bool duplicateExists = await _context.Districts
+                .AnyAsync(x =>
+                    x.DistrictId != model.DistrictId &&
+                    x.StateId == model.StateId &&
+                    x.DistrictCode == model.DistrictCode);
+
+            if (duplicateExists)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "This district code already exists for the selected state."
+                });
+            }
+
+            district.StateId = model.StateId;
+            district.DistrictName = model.DistrictName;
+            district.DistrictCode = model.DistrictCode;
+
+            district.ModifiedOn = DateTime.UtcNow;
+            district.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                message = "District updated successfully."
+            });
+        }
+
         #endregion
     }
 }
