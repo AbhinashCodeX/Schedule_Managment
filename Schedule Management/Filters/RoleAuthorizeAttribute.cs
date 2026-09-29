@@ -14,11 +14,9 @@ namespace Schedule_Management.Filters
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            string? roleName =
-                context.HttpContext.Session.GetString("RoleName");
+            string? roleName = context.HttpContext.Session.GetString("RoleName");
 
-            int? userId =
-                context.HttpContext.Session.GetInt32("UserId");
+            int? userId = context.HttpContext.Session.GetInt32("UserId");
 
             bool unauthorized =
                 string.IsNullOrEmpty(roleName) ||

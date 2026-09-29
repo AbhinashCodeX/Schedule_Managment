@@ -1398,6 +1398,51 @@ namespace Schedule_Management.Controllers
             });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleDistrictStatus(int id)
+        {
+            int? adminId = HttpContext.Session.GetInt32("UserId");
+
+            if (!adminId.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Session expired. Please login again."
+                });
+            }
+
+            var district = await _context.Districts
+                .FirstOrDefaultAsync(x => x.DistrictId == id);
+
+            if (district == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "District not found."
+                });
+            }
+
+            district.IsActive = !district.IsActive;
+
+            district.ModifiedOn = DateTime.UtcNow;
+            district.ModifiedBy = adminId.Value;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                isActive = district.IsActive,
+
+                message = district.IsActive
+                    ? "District activated successfully."
+                    : "District deactivated successfully."
+            });
+        }
+
         #endregion
     }
 }

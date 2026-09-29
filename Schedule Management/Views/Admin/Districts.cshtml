@@ -69,6 +69,7 @@
 
                                     <td>@item.DistrictCode</td>
 
+                                    <!-- STATUS COLUMN -->
                                     <td>
                                         @if (item.IsActive)
                                         {
@@ -84,7 +85,11 @@
                                         }
                                     </td>
 
+
+                                    <!-- ACTIONS COLUMN -->
                                     <td>
+
+                                        <!-- EDIT -->
                                         <button type="button"
                                                 class="btn btn-sm btn-outline-primary btn-edit-district"
                                                 data-id="@item.DistrictId"
@@ -95,20 +100,29 @@
                                             Edit
                                         </button>
 
+
+                                        <!-- ACTIVATE / DEACTIVATE -->
                                         @if (item.IsActive)
                                         {
                                             <button type="button"
-                                                    class="btn btn-sm btn-outline-danger">
+                                                    class="btn btn-sm btn-outline-danger btn-toggle-district"
+                                                    data-id="@item.DistrictId"
+                                                    data-name="@item.DistrictName"
+                                                    data-active="true">
                                                 Deactivate
                                             </button>
                                         }
                                         else
                                         {
                                             <button type="button"
-                                                    class="btn btn-sm btn-outline-success">
+                                                    class="btn btn-sm btn-outline-success btn-toggle-district"
+                                                    data-id="@item.DistrictId"
+                                                    data-name="@item.DistrictName"
+                                                    data-active="false">
                                                 Activate
                                             </button>
                                         }
+
                                     </td>
 
                                 </tr>
@@ -396,7 +410,9 @@
     </div>
 
 </div>
-
+<form id="districtStatusForm">
+    @Html.AntiForgeryToken()
+</form>
 @section Scripts{
 <script>
     $("#addDistrictForm").on("submit", function (e) {
@@ -522,60 +538,11 @@
 
     });
 
-
-                     $("#editDistrictForm").on("submit", function (e) {
-
-                     e.preventDefault();
-
-                     var form = $(this);
-
-                     $.ajax({
-
-                         url: '@Url.Action("EditDistrict", "Admin")',
-
-                         type: "POST",
-
-                         data: form.serialize(),
-
-                         success: function (response) {
-
-                             if (response.success) {
-
-                                 toastr.success(response.message);
-
-                                 var modalElement = document.getElementById("editDistrictModal");
-
-                                 var modalInstance = bootstrap.Modal.getInstance(modalElement);
-
-                                 modalInstance.hide();
-
-                                 setTimeout(function () {
-                                     location.reload();
-                                 }, 700);
-
-                             }
-                             else {
-                                 toastr.error(response.message);
-                             }
-
-                         },
-
-                         error: function () {
-
-                             toastr.error(
-                                 "Something went wrong while updating district."
-                             );
-
-                         }
-
-                     });
-
-                 });
-
+                
             $("#editCountryId").on("change", function () {
 
             var countryId = $(this).val();
-            var stateDropdown = $("#editStateId");
+            var stateDropdown = $("#editStateId");  
 
             stateDropdown.empty();
 
@@ -618,5 +585,134 @@
             });
 
         });
+
+        // UPDATE DISTRICT
+        $("#editDistrictForm").on("submit", function (e) {
+
+            e.preventDefault();
+
+            var form = $(this);
+
+            $.ajax({
+
+                url: '@Url.Action("EditDistrict", "Admin")',
+
+                type: "POST",
+
+                data: form.serialize(),
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        toastr.success(response.message);
+
+                        var modalElement =
+                            document.getElementById("editDistrictModal");
+
+                        var modalInstance =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        modalInstance.hide();
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 700);
+                    }
+                    else {
+                        toastr.error(response.message);
+                    }
+                },
+
+                error: function () {
+
+                    toastr.error(
+                        "Something went wrong while updating district."
+                    );
+
+                }
+
+            });
+
+        });
+
+                // ACTIVATE / DEACTIVATE DISTRICT
+        $(document).on("click", ".btn-toggle-district", function () {
+
+            var button = $(this);
+
+            var districtId = button.data("id");
+            var districtName = button.data("name");
+            var isActive = button.data("active") === true;
+
+            var actionText = isActive ? "Deactivate" : "Activate";
+
+            Swal.fire({
+
+                title: actionText + " District?",
+
+                text: "Are you sure you want to "
+                    + actionText.toLowerCase()
+                    + " " + districtName + "?",
+
+                icon: "warning",
+
+                showCancelButton: true,
+
+                confirmButtonText: "Yes, " + actionText,
+
+                cancelButtonText: "Cancel"
+
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    var token = $("#districtStatusForm input[name='__RequestVerificationToken']").val();
+
+                    $.ajax({
+
+                        url: '@Url.Action("ToggleDistrictStatus", "Admin")',
+
+                        type: "POST",
+
+                        data: {
+                            id: districtId,
+                            __RequestVerificationToken: token
+                        },
+
+                        success: function (response) {
+
+                            if (response.success) {
+
+                                toastr.success(response.message);
+
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 700);
+
+                            }
+                            else {
+
+                                toastr.error(response.message);
+
+                            }
+
+                        },
+
+                        error: function () {
+
+                            toastr.error(
+                                "Something went wrong while updating district status."
+                            );
+
+                        }
+
+                    });
+
+                }
+
+            });
+
+        });                                                                                                                                         
 </script>
 }
