@@ -56,9 +56,7 @@ namespace Schedule_Management.Controllers
             return Json(coaches);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAvailableDates(
-           int activityTypeId,
-           int coachId)
+        public async Task<IActionResult> GetAvailableDates(int activityTypeId, int coachId)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 

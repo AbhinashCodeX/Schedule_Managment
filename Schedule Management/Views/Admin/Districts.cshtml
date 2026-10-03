@@ -27,6 +27,121 @@
 
     </div>
 
+    <!-- SEARCH & FILTER SECTION -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <form method="get" asp-controller="Admin" asp-action="Districts">
+
+                <div class="row g-3 align-items-end">
+
+                    <!-- SEARCH -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">
+                            Search
+                        </label>
+
+                        <input type="text"
+                               name="search"
+                               value="@ViewBag.Search"
+                               class="form-control"
+                               placeholder="District, code, state..." />
+                    </div>
+
+
+                    <!-- COUNTRY -->
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">
+                            Country
+                        </label>
+
+                        <select id="filterCountryId"
+                                name="countryId"
+                                class="form-select">
+
+                            <option value="">
+                                All Countries
+                            </option>
+
+                            @foreach (var country in ViewBag.Countries)
+                            {
+                                <option value="@country.CountryId"
+                                        selected="@(ViewBag.CountryId != null && ViewBag.CountryId == country.CountryId)">
+                                    @country.CountryName
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+
+                    <!-- STATE -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">
+                            State
+                        </label>
+
+                        <select id="filterStateId"
+                                name="stateId"
+                                class="form-select"
+                                disabled>
+
+                            <option value="">
+                                All States
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">
+                            Status
+                        </label>
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                All Status
+                            </option>
+
+                            <option value="Active"
+                                    selected="@(ViewBag.Status == "Active")">
+                                Active
+                            </option>
+
+                            <option value="Inactive"
+                                    selected="@(ViewBag.Status == "Inactive")">
+                                Inactive
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="col-md-2">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>
+                            Filter
+                        </button>
+
+                        <a asp-controller="Admin" asp-action="Districts" class="btn btn-outline-secondary">
+                            Reset
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
 
     <div class="card shadow-sm border-0">
 
@@ -415,6 +530,99 @@
 </form>
 @section Scripts{
 <script>
+            // FILTER: COUNTRY -> STATE
+        $("#filterCountryId").on("change", function () {
+
+            var countryId = $(this).val();
+            var stateDropdown = $("#filterStateId");
+
+            stateDropdown.empty();
+            stateDropdown.append(
+                '<option value="">All States</option>'
+            );
+
+            // Country select nahi hai
+            if (!countryId) {
+                stateDropdown.prop("disabled", true);
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GetStatesByCountry", "Admin")',
+                type: "GET",
+                data: {
+                    countryId: countryId
+                },
+
+                success: function (states) {
+
+                    $.each(states, function (index, state) {
+
+                        stateDropdown.append(
+                            $("<option></option>")
+                                .val(state.stateId)
+                                .text(state.stateName)
+                        );
+
+                    });
+
+                    stateDropdown.prop("disabled", false);
+                },
+
+                error: function () {
+                    toastr.error("Unable to load states.");
+                }
+            });
+        });
+
+                     // PAGE LOAD: PRESERVE SELECTED COUNTRY & STATE
+                $(document).ready(function () {
+
+                    var selectedCountryId = '@ViewBag.CountryId';
+                    var selectedStateId = '@ViewBag.StateId';
+
+                    // Agar pehle se country selected hai
+                    if (selectedCountryId) {
+
+                        var stateDropdown = $("#filterStateId");
+
+                        stateDropdown.empty();
+                        stateDropdown.append(
+                            '<option value="">All States</option>'
+                        );
+
+                        $.ajax({
+                            url: '@Url.Action("GetStatesByCountry", "Admin")',
+                            type: "GET",
+
+                            data: {
+                                countryId: selectedCountryId
+                            },
+
+                            success: function (states) {
+
+                                $.each(states, function (index, state) {
+
+                                    stateDropdown.append($("<option></option>").val(state.stateId).text(state.stateName));
+
+                                });
+
+                                // State dropdown enable
+                                stateDropdown.prop("disabled", false);
+
+                                // Previously selected state wapas select
+                                if (selectedStateId) {
+                                    stateDropdown.val(selectedStateId);
+                                }
+                            },
+
+                            error: function () {
+                                toastr.error("Unable to load selected state.");
+                            }
+                        });
+                    }
+                });
+
     $("#addDistrictForm").on("submit", function (e) {
 
     e.preventDefault();
@@ -435,11 +643,9 @@
 
                 toastr.success(response.message);
 
-                var modalElement =
-                    document.getElementById("addDistrictModal");
+                var modalElement = document.getElementById("addDistrictModal");
 
-                var modalInstance =
-                    bootstrap.Modal.getInstance(modalElement);
+                var modalInstance = bootstrap.Modal.getInstance(modalElement);
 
                 modalInstance.hide();
 
@@ -713,6 +919,8 @@
 
             });
 
-        });                                                                                                                                         
+        });    
+
+
 </script>
 }
